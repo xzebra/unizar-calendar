@@ -1,0 +1,57 @@
+{
+	"Xa": [
+		{
+			"nombre": "Proyecto Hardware",
+			"horas": "10:00-14:00",
+			"compañeros": ["Carlos"],
+			"google-meet": "https://meet.google.com/iac-dfzy-kwb?pli=1&authuser=1",
+			"google-meet-privado": "https://meet.google.com/xfi-bemu-raa?pli=1&authuser=1"
+		}
+	],
+	"Xb": [
+		{
+			"nombre": "Proyecto Hardware",
+			"horas": "10:00-14:00",
+			"compañeros": ["Carlos"],
+			"google-meet": "https://meet.google.com/iac-dfzy-kwb?pli=1&authuser=1",
+			"google-meet-privado": "https://meet.google.com/xfi-bemu-raa?pli=1&authuser=1"
+		}
+	],
+	"Ja": [
+		{
+			"nombre": "Inteligencia Artificial",
+			"horas": "17:00-19:00"
+		}
+	],
+	"Jb": [
+		{
+			"nombre": "Ingeniería del Software",
+			"horas": "17:00-19:00",
+			"compañeros": ["Carlos"],
+			"google-meet": "https://meet.google.com/fsi-kspo-ifv?pli=1&authuser=1",
+			"google-meet-privado": "https://meet.google.com/rpi-fgre-wce?pli=1&authuser=1"
+		}
+	],
+	"Va": [
+		{
+			"nombre": "Sistemas de Información",
+			"horas": "12:00-14:00",
+			"compañeros": ["Carlos", "Mario"],
+			"google-meet": "https://meet.google.com/ooo-gnvy-zyw?pli=1&authuser=1"
+		},
+		{
+			"nombre": "Sistemas distribuidos",
+			"horas": "10:00-12:00",
+			"compañeros": ["Mario"],
+			"google-meet": "https://meet.google.com/ijq-umtk-ewp?pli=1&authuser=1"
+		}
+	],
+	"Vb": [
+		{
+			"nombre": "Sistemas de Información",
+			"horas": "12:00-14:00",
+			"compañeros": ["Carlos", "Mario"],
+			"google-meet": "https://meet.google.com/ooo-gnvy-zyw?pli=1&authuser=1"
+		}
+	]
+}
