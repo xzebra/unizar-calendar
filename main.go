@@ -1,21 +1,23 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
-	"os"
-	"strconv"
-	"strings"
-	"time"
+	"unizar-calendar/gcal"
+	"unizar-calendar/schedules"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/tealeg/xlsx"
 )
 
 var (
 	ErrNoNextVal = errors.New("no existe siguiente valor en la fila")
+)
+
+var (
+	daysA      = "eina.unizar.es_hlti3ac2pou7knidr6e6267g4s@group.calendar.google.com"
+	daysB      = "eina.unizar.es_ri3mten96cc0s8am0hm080bi94@group.calendar.google.com"
+	holidays   = "eina.unizar.es_nvgat6f556c48fmtk7llb5i5l0@group.calendar.google.com"
+	exams      = "eina.unizar.es_8g43cd660rntvu09n32g4hsonk@group.calendar.google.com"
+	evaluation = "eina.unizar.es_9vuatq1d533o3aoknsej9vbiv8@group.calendar.google.com"
 )
 
 var months = map[string]int{
@@ -33,308 +35,126 @@ var months = map[string]int{
 	"Dic":  12,
 }
 
-type Day struct {
-	time.Time
-	WeekDay string // La, Lb, Ma, Mb...
-}
+// type Semester struct {
+// 	Days []Day
+// }
 
-type Semester struct {
-	Start string
-	Days  []*Day
-}
+// type Day struct {
+// 	time.Time
+// 	WeekDay string // La, Lb, Ma, Mb...
+// }
 
-type Schedule map[string][]*ScheduleClass
+// type ClassTimes struct {
+// 	Info  *schedules.ScheduleClass
+// 	Times []*ClassTime
+// }
 
-type ScheduleClass struct {
-	Name              string   `json:"nombre"`
-	Hours             string   `json:"horas"`
-	Partners          []string `json:"compañeros"`
-	GoogleMeet        string   `json:"google-meet"`
-	PrivateGoogleMeet string   `json:"google-meet-privado"`
-}
+// type ClassTime struct {
+// 	Day   time.Time
+// 	Hours string
+// }
 
-func getMonth(row []*xlsx.Cell) int {
-	month := row[0].Value
-	return months[month]
-}
+// type MergedSchedule map[string]*ClassTimes
 
-func hasNums(row []*xlsx.Cell) bool {
-	for _, col := range row {
-		for _, c := range col.Value {
-			if c >= '0' && c <= '9' {
-				return true
-			}
-		}
-	}
+// func NewMergedSchedule(sch schedules.Schedule, names schedules.ClassName, sem Semester) (out MergedSchedule) {
+// 	out = make(MergedSchedule)
 
-	return false
-}
+// 	for _, day := range sem.Days {
+// 		schClasses := sch[day.WeekDay]
+// 		for _, schClass := range schClasses {
+// 			// Inicializamos si no lo está
+// 			className := names[schClass.ID]
+// 			if _, ok := out[className]; !ok {
+// 				out[className] = &ClassTimes{
+// 					Info: schClass,
+// 				}
+// 			}
 
-func parseStart(rowNum int, sheet *xlsx.Sheet) (year, month int) {
-	var err error
+// 			// Añadimos el horario cuando ya esté inicializado
+// 			out[className].Times = append(out[className].Times, &ClassTime{
+// 				Day:   day.Time,
+// 				Hours: schClass.Hours,
+// 			})
+// 		}
+// 	}
 
-	row := sheet.Rows[rowNum].Cells
+// 	return
 
-	year, err = row[0].Int()
-	if err != nil {
-		panic(err)
-	}
+// }
 
-	for i := rowNum + 1; i < len(sheet.Rows); i++ {
-		row = sheet.Rows[i].Cells
-		if row[0].Value != "" {
-			month = months[row[0].Value]
-			return
-		}
-	}
+// // ToOrg exporta a sintaxis de org-mode para ser leido por org-agenda.
+// //
+// // Ex:
+// // * Inteligencia artificial
+// // <2020-09-29 15:00-16:00 Tue>
+// // <2020-09-30 15:00-16:00 Tue>
+// // :STYLE: habit
+// func (m MergedSchedule) ToOrg() string {
+// 	var out strings.Builder
 
-	return
-}
+// 	i := 0
+// 	newLined := false
+// 	for class, times := range m {
+// 		if len(times.Times) == 0 {
+// 			continue
+// 		}
 
-func nextInt(pos int, cells []*xlsx.Cell) (int, error) {
-	for ; pos < len(cells); pos++ {
-		if _, err := cells[pos].Int(); err == nil {
-			return pos, nil
-		}
-	}
+// 		if i > 0 && !newLined {
+// 			out.WriteByte('\n')
+// 		}
+// 		i++
+// 		newLined = false
 
-	return 0, ErrNoNextVal
-}
+// 		out.WriteString("* " + class + "\n")
+// 		for _, time := range times.Times {
+// 			out.WriteString(
+// 				fmt.Sprintf("<%s %s>\n",
+// 					time.Day.Format("2006-01-02"),
+// 					time.Hours,
+// 				),
+// 			)
+// 		}
+// 		out.WriteString(":STYLE: habit\n\n")
+// 		newLined = true
 
-func ensureNextString(pos int, cells []*xlsx.Cell) (int, error) {
-	for ; pos < len(cells); pos++ {
-		if _, err := cells[pos].Int(); err != nil {
-			if cells[pos].Value != "" {
-				return pos, nil
-			}
-		} else {
-			return pos, errors.New("entero encontrado en el camino")
-		}
-	}
+// 	}
 
-	return 0, ErrNoNextVal
-}
-
-func parseTable(rowNum int, sheet *xlsx.Sheet) (sem *Semester) {
-	year, month := parseStart(rowNum, sheet)
-	sem = &Semester{
-		Start: fmt.Sprintf("%d/%d", month, year),
-	}
-
-	rows := sheet.Rows
-	lastDay := 0
-
-	// procesamos las filas de la tabla
-	rowNum++
-	for rowNum < len(rows) {
-		row := rows[rowNum].Cells
-		// omitimos el mes, el num de semana y el finde
-		row = row[2 : len(row)-2]
-
-		if !hasNums(row) {
-			break
-		}
-
-		// Iniciamos el procesado de los días. En el momento en el que no cuadre
-		// con el formato | numDia | La |, se asumirá que es el final de la
-		// tabla y, por lo tanto, del semestre.
-		for i := 0; i < len(row); i++ {
-			var err error
-
-			i, err = nextInt(i, row)
-			if err != nil {
-				break
-			}
-
-			day, err := row[i].Int()
-			if err != nil {
-				break
-			}
-
-			if day <= lastDay {
-				month++
-			}
-			lastDay = day
-
-			i, err = ensureNextString(i+1, row)
-			if err != nil {
-				if err == ErrNoNextVal {
-					break
-				}
-				continue
-			}
-
-			weekDay := row[i].Value
-
-			date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-			sem.Days = append(sem.Days, &Day{
-				Time:    date,
-				WeekDay: weekDay[:2],
-			})
-		}
-
-		// avanzamos a la siguiente fila
-		rowNum++
-	}
-
-	return sem
-}
-
-func parseSheets(sheets []*xlsx.Sheet) (sems []*Semester, err error) {
-	if len(sheets) == 0 {
-		return nil, errors.New("las tablas no contienen información")
-	}
-
-	// Cogemos solo la primera hoja, que tiene los horarios del primer
-	// y segundo cuatrimestre
-	sheet := sheets[0]
-
-	for rowNum, row := range sheet.Rows {
-		cells := row.Cells
-
-		// Para identificar las distintas tablas, tenemos que encontrar la fila
-		// inicial. Esta siempre empieza por el año, un número, seguidas de
-		// "sem".
-		if _, err := strconv.Atoi(cells[0].Value); err != nil {
-			continue
-		}
-
-		if cells[1].Value != "sem" {
-			continue
-		}
-
-		sems = append(sems, parseTable(rowNum, sheet))
-	}
-
-	return
-}
-
-type ClassTimes struct {
-	Info  *ScheduleClass
-	Times []*ClassTime
-}
-
-type ClassTime struct {
-	Day   time.Time
-	Hours string
-}
-
-type MergedSchedule map[string]*ClassTimes
-
-// ToOrg exporta a sintaxis de org-mode para ser leido por org-agenda.
-//
-// Ex:
-// * Inteligencia artificial
-// <2020-09-29 15:00-16:00 Tue>
-// <2020-09-30 15:00-16:00 Tue>
-// :STYLE: habit
-func (m MergedSchedule) ToOrg() string {
-	var out strings.Builder
-
-	i := 0
-	newLined := false
-	for class, times := range m {
-		if len(times.Times) == 0 {
-			continue
-		}
-
-		if i > 0 && !newLined {
-			out.WriteByte('\n')
-		}
-		i++
-		newLined = false
-
-		out.WriteString("* " + class + "\n")
-		for _, time := range times.Times {
-			out.WriteString(
-				fmt.Sprintf("<%s %s>\n",
-					time.Day.Format("2006-01-02"),
-					time.Hours,
-				),
-			)
-		}
-		out.WriteString(":STYLE: habit\n\n")
-		newLined = true
-
-		if len(times.Info.Partners) > 0 {
-			newLined = false
-
-			out.WriteString("- Compañeros: ")
-			out.WriteByte('\n')
-			for _, partner := range times.Info.Partners {
-				out.WriteString("  + ")
-				out.WriteString(partner)
-				out.WriteByte('\n')
-			}
-		}
-		if times.Info.GoogleMeet != "" {
-			newLined = false
-
-			out.WriteString("- Google Meet: ")
-			out.WriteString(times.Info.GoogleMeet)
-			out.WriteByte('\n')
-		}
-
-		if times.Info.PrivateGoogleMeet != "" {
-			newLined = false
-
-			out.WriteString("- Nuestro Google Meet: ")
-			out.WriteString(times.Info.PrivateGoogleMeet)
-			out.WriteByte('\n')
-		}
-	}
-
-	return out.String()
-}
-
-func mergeSchedule(sch Schedule, sem *Semester) (out MergedSchedule) {
-	out = make(MergedSchedule)
-
-	for _, day := range sem.Days {
-		schClasses := sch[day.WeekDay]
-		for _, schClass := range schClasses {
-			// Inicializamos si no lo está
-			if _, ok := out[schClass.Name]; !ok {
-				out[schClass.Name] = &ClassTimes{
-					Info: schClass,
-				}
-			}
-
-			// Añadimos el horario cuando ya esté inicializado
-			out[schClass.Name].Times = append(out[schClass.Name].Times, &ClassTime{
-				Day:   day.Time,
-				Hours: schClass.Hours,
-			})
-		}
-	}
-
-	return
-}
+// 	return out.String()
+// }
 
 func main() {
 	log.SetFormatter(&log.TextFormatter{
 		ForceColors: true,
 	})
 
-	// He usado https://pdftoxls.com/ para convertir el .pdf a .xlsx
-	calendar, err := xlsx.OpenFile("./test.xlsx")
+	names, err := schedules.ParseClassNames("./classNames.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	semesters, err := parseSheets(calendar.Sheets)
+	log.Info(names)
+
+	schedule, err := schedules.ParseSchedule("./horario.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	scheduleFile, err := os.Open("./horario.json")
+	log.Info(schedule)
+
+	cal, err := gcal.NewGoogleCalendar()
 	if err != nil {
 		log.Fatal(err)
 	}
-	content, _ := ioutil.ReadAll(scheduleFile)
-	var schedule Schedule
-	json.Unmarshal(content, &schedule)
 
-	merged := mergeSchedule(schedule, semesters[0])
-	fmt.Println(merged.ToOrg())
+	types, err := cal.GetCalendarEventDays(daysA)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(types["La"])
+
+	days, err := cal.GetCalendarDays(holidays)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(days)
 }
