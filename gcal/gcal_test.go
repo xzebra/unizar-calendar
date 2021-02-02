@@ -13,7 +13,67 @@ import (
 	"google.golang.org/api/calendar/v3"
 )
 
+var (
+	ignoreID string = "ignored by mockup"
+)
+
+// ----------------------------------------------------------
+// Test mockup data
+// ----------------------------------------------------------
 type mockupData map[int][12][]*calendar.Event
+
+var testdata = mockupData{
+	2016: [12][]*calendar.Event{
+		{},
+		{},
+		{},
+		{ // April
+			{
+				Summary: "San Jorge. Día de Aragón",
+				Start:   &calendar.EventDateTime{Date: "2016-04-23"},
+				End:     &calendar.EventDateTime{Date: "2016-04-23"},
+			},
+		},
+		{ // May
+			{
+				Summary: "La5",
+				Start:   &calendar.EventDateTime{Date: "2016-05-03"},
+				End:     &calendar.EventDateTime{Date: "2016-05-03"},
+			},
+			{
+				Summary: "Ma5",
+				Start:   &calendar.EventDateTime{Date: "2016-05-04"},
+				End:     &calendar.EventDateTime{Date: "2016-05-04"},
+			},
+			{
+				Summary: "Lb6",
+				Start:   &calendar.EventDateTime{Date: "2016-05-11"},
+				End:     &calendar.EventDateTime{Date: "2016-05-11"},
+			},
+			{
+				Summary: "Mb6",
+				Start:   &calendar.EventDateTime{Date: "2016-05-12"},
+				End:     &calendar.EventDateTime{Date: "2016-05-12"},
+			},
+			{
+				Summary: "La6",
+				Start:   &calendar.EventDateTime{Date: "2016-05-17"},
+				End:     &calendar.EventDateTime{Date: "2016-05-17"},
+			},
+		},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+	},
+}
+
+// ----------------------------------------------------------
+// Google API Service Mockup
+// ----------------------------------------------------------
 
 type serviceMockup struct {
 	// events stores a list of events of every month given a year.
@@ -69,10 +129,14 @@ func (c *serviceMockup) GetEventsList(_ string, timeMin, timeMax time.Time) (eve
 	return
 }
 
+// ----------------------------------------------------------
+// Test functions
+// ----------------------------------------------------------
+
 var cal *gcal.GoogleCalendar
 var mockup *serviceMockup
 
-func TestGetEventsList(t *testing.T) {
+func TestGetCalendarEvents(t *testing.T) {
 	timeBegin := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
 	timeEnd := time.Date(2016, time.December, 31, 0, 0, 0, 0, time.UTC)
 
@@ -83,7 +147,7 @@ func TestGetEventsList(t *testing.T) {
 		// (Day and Month) will be used.
 		Event gcal.Event
 	}{
-		ID:      "ignored by mockup",
+		ID:      ignoreID,
 		TimeMin: timeBegin,
 		TimeMax: timeEnd,
 		Event: gcal.Event{
@@ -133,7 +197,7 @@ func TestGetCalendarEventDays(t *testing.T) {
 	}
 
 	eventDays, err := cal.GetCalendarEventDays(
-		"ignored by mockup",
+		ignoreID,
 		timeBegin,
 		timeEnd,
 	)
@@ -147,8 +211,30 @@ func TestGetCalendarEventDays(t *testing.T) {
 	}
 }
 
+func TestGetCalendarDays(t *testing.T) {
+	timeBegin := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
+	timeEnd := time.Date(2016, time.December, 31, 0, 0, 0, 0, time.UTC)
+
+	// We asume GetCalendarEventMask is working fine.
+	eventDayMask, err := cal.GetCalendarEventMask(ignoreID, timeBegin, timeEnd)
+	assert.Nil(t, err)
+
+	returned, err := cal.GetCalendarDays(ignoreID, timeBegin, timeEnd)
+	assert.Nil(t, err)
+
+	assert.Equal(t, len(eventDayMask), len(returned))
+
+	for _, event := range returned {
+		assert.True(t, eventDayMask[event])
+	}
+}
+
+// ----------------------------------------------------------
+// Test initialization
+// ----------------------------------------------------------
+
 func TestMain(t *testing.M) {
-	// Credentials file is inside root folder, go get it!
+	// Run everything from project root folder
 	_, filename, _, _ := runtime.Caller(0)
 	dir := path.Join(path.Dir(filename), "..")
 	err := os.Chdir(dir)
@@ -162,54 +248,7 @@ func TestMain(t *testing.M) {
 	// Create a Google Calendar API mockup
 	cal = gcal.NewGoogleCalendarFromService(
 		&serviceMockup{
-			events: mockupData{
-				2016: [12][]*calendar.Event{
-					{},
-					{},
-					{},
-					{ // April
-						{
-							Summary: "San Jorge. Día de Aragón",
-							Start:   &calendar.EventDateTime{Date: "2016-04-23"},
-							End:     &calendar.EventDateTime{Date: "2016-04-23"},
-						},
-					},
-					{ // May
-						{
-							Summary: "La5",
-							Start:   &calendar.EventDateTime{Date: "2016-05-03"},
-							End:     &calendar.EventDateTime{Date: "2016-05-03"},
-						},
-						{
-							Summary: "Ma5",
-							Start:   &calendar.EventDateTime{Date: "2016-05-04"},
-							End:     &calendar.EventDateTime{Date: "2016-05-04"},
-						},
-						{
-							Summary: "Lb6",
-							Start:   &calendar.EventDateTime{Date: "2016-05-11"},
-							End:     &calendar.EventDateTime{Date: "2016-05-11"},
-						},
-						{
-							Summary: "Mb6",
-							Start:   &calendar.EventDateTime{Date: "2016-05-12"},
-							End:     &calendar.EventDateTime{Date: "2016-05-12"},
-						},
-						{
-							Summary: "La6",
-							Start:   &calendar.EventDateTime{Date: "2016-05-17"},
-							End:     &calendar.EventDateTime{Date: "2016-05-17"},
-						},
-					},
-					{},
-					{},
-					{},
-					{},
-					{},
-					{},
-					{},
-				},
-			},
+			events: testdata,
 		},
 	)
 

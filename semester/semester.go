@@ -1,8 +1,6 @@
-package main
+package semester
 
 import (
-	"fmt"
-	"strings"
 	"time"
 	"unizar-calendar/gcal"
 	"unizar-calendar/schedules"
@@ -56,7 +54,6 @@ func NewSemester(cal *gcal.GoogleCalendar, number int) (*Semester, error) {
 
 	// Find begind and end of semester in current or previous year.
 	for year >= time.Now().Year()-1 {
-		fmt.Println("trying with year", year)
 		eval, err := cal.GetYearCalendarEvents(evaluation, year)
 		if err != nil {
 			return nil, err
@@ -64,7 +61,6 @@ func NewSemester(cal *gcal.GoogleCalendar, number int) (*Semester, error) {
 
 		// Find the start and end of semester events.
 		for _, evalEvent := range eval {
-			fmt.Println(year, evalEvent.Start, evalEvent.Name)
 			switch evalEvent.Name {
 			case semesterEvents[number].Begin:
 				semester.Begin = evalEvent.Start
@@ -72,10 +68,6 @@ func NewSemester(cal *gcal.GoogleCalendar, number int) (*Semester, error) {
 				semester.End = evalEvent.Start
 			}
 		}
-		fmt.Println("-----------")
-		fmt.Println(semester.Begin)
-		fmt.Println(semester.End)
-		fmt.Println("-----------")
 
 		// Try with previous year.
 		year--
@@ -88,15 +80,15 @@ type timeRange struct {
 	Start, End time.Time
 }
 
-type SemesterData struct {
+type Data struct {
 	Semester *Semester
 	Schedule schedules.Schedule
 	Classes  schedules.ClassNames
-	days     gcal.EventDays
+	Days     gcal.EventDays
 
-	// merged is an association between class ids and a list of all
+	// Merged is an association between class ids and a list of all
 	// days when the class should occur.
-	merged map[string][]timeRange
+	Merged map[string][]timeRange
 }
 
 func mergeDayTypes(a, b gcal.EventDays) (c gcal.EventDays) {
@@ -140,7 +132,7 @@ func getCalendarDays(
 	return mergeDayTypes(daysTypeA, daysTypeB), nil
 }
 
-func NewSemesterData(files *schedules.SemesterFiles, number int) (*SemesterData, error) {
+func NewData(files *schedules.SemesterFiles, number int) (*Data, error) {
 	parsed, err := schedules.ParseSemesterFiles(files)
 	if err != nil {
 		return nil, err
@@ -156,29 +148,27 @@ func NewSemesterData(files *schedules.SemesterFiles, number int) (*SemesterData,
 		return nil, err
 	}
 
-	fmt.Println(semester.Begin.Date())
-
 	daysType, err := getCalendarDays(cal, semester)
 	if err != nil {
 		return nil, err
 	}
 
-	s := &SemesterData{
+	s := &Data{
 		Semester: semester,
 		Schedule: parsed.Schedule,
 		Classes:  parsed.Names,
-		days:     daysType,
+		Days:     daysType,
 	}
 	s.mergeClassesDays()
 
 	return s, nil
 }
 
-func (s *SemesterData) mergeClassesDays() {
-	s.merged = make(map[string][]timeRange)
+func (s *Data) mergeClassesDays() {
+	s.Merged = make(map[string][]timeRange)
 
 	// For each type of day
-	for dayType, days := range s.days {
+	for dayType, days := range s.Days {
 		// Get classes on that day type
 		sched := s.Schedule[dayType]
 
@@ -187,41 +177,11 @@ func (s *SemesterData) mergeClassesDays() {
 			// For each day that matches that type of day
 			for _, day := range days {
 				// Add times associated to class
-				s.merged[class.ID] = append(s.merged[class.ID], timeRange{
+				s.Merged[class.ID] = append(s.Merged[class.ID], timeRange{
 					Start: class.Start.AddTo(day),
 					End:   class.End.AddTo(day),
 				})
 			}
 		}
 	}
-}
-
-// ToOrg exports to Emacs org-mode (https://orgmode.org/) syntaxis, to
-// be read by org-agenda.
-//
-// Ex:
-// * Inteligencia artificial
-// <2020-09-29 15:00-16:00 Tue>
-// <2020-09-30 15:00-16:00 Tue>
-// :STYLE: habit
-func (s *SemesterData) ToOrg() string {
-	var out strings.Builder
-
-	for class, times := range s.merged {
-		out.WriteString("* " + s.Classes[class] + "\n")
-
-		for _, time := range times {
-			out.WriteString(
-				fmt.Sprintf("<%s %s-%s>\n",
-					time.Start.Format("2006-01-02"),
-					time.Start.Format("15:04"),
-					time.End.Format("15:04"),
-				),
-			)
-		}
-
-		out.WriteString(":STYLE: habit\n\n")
-	}
-
-	return out.String()
 }
