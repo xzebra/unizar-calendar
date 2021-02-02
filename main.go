@@ -29,8 +29,9 @@ func cliUsage() {
 	class_id;class_name
 	ph;Proyecto Hardware
 	ia;Inteligencia Artificial
-	ing_soft;Ingeniería del Software
-`)
+	ing_soft;Ingeniería del Software`)
+
+	fmt.Println()
 
 	fmt.Println("scheduleFile: csv that contains the semester schedule.")
 	fmt.Println(`e.g.:
@@ -39,8 +40,9 @@ func cliUsage() {
 	Lx;ssdd;17:00;17:50;"
 	This is a description
 	It can be multiline
-	https://meet.google.com/ijq-umtk-ewp?pli=1&authuser=1"
-`)
+	https://meet.google.com/ijq-umtk-ewp?pli=1&authuser=1"`)
+
+	fmt.Println()
 
 	fmt.Println("Options:")
 	flag.PrintDefaults()
