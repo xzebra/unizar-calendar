@@ -2,56 +2,32 @@ package gcal
 
 import (
 	"fmt"
-	"io/ioutil"
 	"time"
 
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
 )
 
+type GcalService interface {
+	GetEventsList(calendarID string, timeMin, timeMax time.Time) (events *calendar.Events, err error)
+}
+
 type GoogleCalendar struct {
-	srv *calendar.Service
+	srv GcalService
 }
 
 func NewGoogleCalendar() (cal *GoogleCalendar, err error) {
-	b, err := ioutil.ReadFile("credentials.json")
-	if err != nil {
-		return nil, fmt.Errorf("Unable to read client secret file: %v", err)
-	}
-
-	// If modifying these scopes, delete your previously saved token.json.
-	config, err := google.ConfigFromJSON(b, calendar.CalendarReadonlyScope)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to parse client secret file to config: %v", err)
-	}
-	client := getClient(config)
-
-	srv, err := calendar.New(client)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to retrieve Calendar client: %v", err)
-	}
-
+	srv, err := newServiceImpl()
 	return &GoogleCalendar{
 		srv: srv,
-	}, nil
+	}, err
 }
 
-func (c *GoogleCalendar) getEventsList(id string, timeMin, timeMax time.Time) (events *calendar.Events, err error) {
-	listCall := c.srv.Events.List(id).
-		ShowDeleted(false).
-		SingleEvents(true).
-		TimeMin(timeMin.Format(time.RFC3339)).
-		OrderBy("startTime")
-
-	if !timeMax.IsZero() {
-		listCall = listCall.TimeMax(timeMax.Format(time.RFC3339))
+// NewGoogleCalendarFromService used to give the calendar parser a
+// different Google Calendar endpoint. Actually used for mockups.
+func NewGoogleCalendarFromService(srv GcalService) (cal *GoogleCalendar) {
+	return &GoogleCalendar{
+		srv: srv,
 	}
-
-	events, err = listCall.Do()
-	if err != nil {
-		return nil, fmt.Errorf("unable to get calendar: %v", err)
-	}
-	return
 }
 
 type Event struct {
@@ -61,7 +37,7 @@ type Event struct {
 
 // GetCalendarEvents returns a list of all events in the calendar.
 func (c *GoogleCalendar) GetCalendarEvents(id string, timeMin, timeMax time.Time) (out []*Event, err error) {
-	events, err := c.getEventsList(id, timeMin, timeMax)
+	events, err := c.srv.GetEventsList(id, timeMin, timeMax)
 	if err != nil {
 		return nil, err
 	}
@@ -105,13 +81,9 @@ func (c *GoogleCalendar) GetYearCalendarEvents(id string, year int) (out []*Even
 
 // GetCalendarDays returns a list of all days with an event in the calendar.
 func (c *GoogleCalendar) GetCalendarDays(id string, timeMin, timeMax time.Time) (out []time.Time, err error) {
-	events, err := c.getEventsList(id, timeMin, timeMax)
+	events, err := c.srv.GetEventsList(id, timeMin, timeMax)
 	if err != nil {
 		return nil, err
-	}
-
-	if len(events.Items) == 0 {
-		return out, nil
 	}
 
 	for _, item := range events.Items {
@@ -128,11 +100,11 @@ func (c *GoogleCalendar) GetCalendarDays(id string, timeMin, timeMax time.Time) 
 type EventDays map[string][]time.Time
 
 // GetCalendarEventDays returns a map that given an event type (La, Lb...)
-// returns the type of event that occurs that day.
+// returns all days in the range which belong to given type.
 func (c *GoogleCalendar) GetCalendarEventDays(id string, timeMin, timeMax time.Time) (out EventDays, err error) {
 	out = make(EventDays)
 
-	events, err := c.getEventsList(id, timeMin, timeMax)
+	events, err := c.srv.GetEventsList(id, timeMin, timeMax)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +137,7 @@ type EventsMask map[time.Time]bool
 func (c *GoogleCalendar) GetCalendarEventMask(id string, timeMin, timeMax time.Time) (out EventsMask, err error) {
 	out = make(EventsMask)
 
-	events, err := c.getEventsList(id, timeMin, timeMax)
+	events, err := c.srv.GetEventsList(id, timeMin, timeMax)
 	if err != nil {
 		return nil, err
 	}
