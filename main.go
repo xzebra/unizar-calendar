@@ -23,7 +23,7 @@ func cliUsage() {
 		"Usage: %s [options] subjectsFile scheduleFile\n\n",
 		filepath.Base(os.Args[0]), // get only filename
 	)
-	fmt.Println("Arguments:\n")
+	fmt.Printf("Arguments:\n\n")
 	fmt.Println("subjectsFile: csv that contains a list of pairs of ID and subject name.")
 	fmt.Println(`e.g.:
 	class_id;class_name

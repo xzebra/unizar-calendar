@@ -1,7 +1,7 @@
 #+TITLE: unizar-calendar
 
 [[https://github.com/xzebra/unizar-calendar/actions?query=workflow%3Atests][https://github.com/xzebra/unizar-calendar/workflows/tests/badge.svg]]
-[[https://goreportcard.com/badge/github.com/xzebra/unizar-calendar][https://goreportcard.com/report/github.com/xzebra/unizar-calendar]]
+[[https://goreportcard.com/report/github.com/xzebra/unizar-calendar][https://goreportcard.com/badge/github.com/xzebra/unizar-calendar]]
 [[https://godoc.org/github.com/xzebra/unizar-calendar][https://godoc.org/github.com/xzebra/unizar-calendar?status.svg]]
 
 * Compile
