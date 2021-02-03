@@ -38,6 +38,8 @@ type ClassName struct {
 	Desc string `csv:"class_desc"`
 }
 
+// Schedule is a map that given a day type (La, Lb, Ma...) returns the
+// schedule of that day type.
 type Schedule map[string][]*ScheduleClass
 
 type ScheduleClass struct {
