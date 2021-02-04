@@ -1,7 +1,7 @@
 package exports
 
 import (
-	"unizar-calendar/semester"
+	"github.com/xzebra/unizar-calendar/semester"
 )
 
 func Export(data *semester.Data, exportType ExportType) string {

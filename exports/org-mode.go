@@ -2,8 +2,8 @@ package exports
 
 import (
 	"fmt"
+	"github.com/xzebra/unizar-calendar/semester"
 	"strings"
-	"unizar-calendar/semester"
 )
 
 // toOrgMode exports to Emacs org-mode (https://orgmode.org/)
