@@ -30,9 +30,12 @@ func toGcal(s *semester.Data) string {
 	out.WriteString(gcalCSVHeader + "\n")
 
 	for class, times := range s.Merged {
+		name := s.Classes[class].Name
+		desc := s.Classes[class].Desc
+
 		for _, time := range times {
 			// Subject
-			out.WriteString(fmt.Sprintf("\"%s\"%s", s.Classes[class], gcalCSVSeparator))
+			out.WriteString(fmt.Sprintf("\"%s\"%s", name, gcalCSVSeparator))
 			// Start Date
 			out.WriteString(time.Start.Format(gcalCSVDateFormat) + gcalCSVSeparator)
 			// Start Time
@@ -42,7 +45,7 @@ func toGcal(s *semester.Data) string {
 			// End Time
 			out.WriteString(time.End.Format(gcalCSVTimeFormat) + gcalCSVSeparator)
 			// Description
-			out.WriteString("\"\"" + gcalCSVSeparator)
+			out.WriteString(fmt.Sprintf("\"%s\"%s", desc, gcalCSVSeparator))
 			// Private
 			out.WriteString("True\n")
 		}
