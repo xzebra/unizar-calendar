@@ -2,12 +2,12 @@ package gcal_test
 
 import (
 	"fmt"
+	"github.com/xzebra/unizar-calendar/gcal"
 	"os"
 	"path"
 	"runtime"
 	"testing"
 	"time"
-	"unizar-calendar/gcal"
 
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/api/calendar/v3"

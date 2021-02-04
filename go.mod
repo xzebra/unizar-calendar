@@ -1,4 +1,4 @@
-module unizar-calendar
+module github.com/xzebra/unizar-calendar
 
 go 1.14
 
