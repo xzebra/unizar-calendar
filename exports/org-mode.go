@@ -18,7 +18,7 @@ func toOrgMode(s *semester.Data) string {
 	var out strings.Builder
 
 	for class, times := range s.Merged {
-		out.WriteString("* " + s.Classes[class] + "\n")
+		out.WriteString("* " + s.Classes[class].Name + "\n")
 
 		for _, time := range times {
 			out.WriteString(
@@ -31,6 +31,8 @@ func toOrgMode(s *semester.Data) string {
 		}
 
 		out.WriteString(":STYLE: habit\n\n")
+		out.WriteString(s.Classes[class].Desc)
+		out.WriteString("\n")
 	}
 
 	return out.String()

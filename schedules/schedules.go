@@ -30,7 +30,7 @@ func (h *hour) UnmarshalCSV(csv string) error {
 	return nil
 }
 
-type ClassNames map[string]string
+type ClassNames map[string]*ClassName
 
 type ClassName struct {
 	ID   string `csv:"class_id"`
@@ -43,11 +43,10 @@ type ClassName struct {
 type Schedule map[string][]*ScheduleClass
 
 type ScheduleClass struct {
-	Weekday     string `csv:"weekday"`
-	ID          string `csv:"class_id"`
-	Start       hour   `csv:"start_hour"`
-	End         hour   `csv:"end_hour"`
-	Description string `csv:"desc"`
+	Weekday string `csv:"weekday"`
+	ID      string `csv:"class_id"`
+	Start   hour   `csv:"start_hour"`
+	End     hour   `csv:"end_hour"`
 }
 
 func ParseClassNames(filename string) (out ClassNames, err error) {
@@ -70,7 +69,7 @@ func ParseClassNames(filename string) (out ClassNames, err error) {
 	}
 
 	for _, class := range classes {
-		out[class.ID] = class.Name
+		out[class.ID] = class
 	}
 
 	return

@@ -26,21 +26,21 @@ func cliUsage() {
 	fmt.Printf("Arguments:\n\n")
 	fmt.Println("subjectsFile: csv that contains a list of pairs of ID and subject name.")
 	fmt.Println(`e.g.:
-	class_id;class_name
-	ph;Proyecto Hardware
-	ia;Inteligencia Artificial
-	ing_soft;Ingeniería del Software`)
+	class_id;class_name;class_desc
+	ph;Proyecto Hardware;""
+	ia;Inteligencia Artificial;""
+	ing_soft;Ingeniería del Software;"
+	This is a description
+	It can be multiline
+	https://meet.google.com/ijq-umtk-ewp?pli=1&authuser=1"`)
 
 	fmt.Println()
 
 	fmt.Println("scheduleFile: csv that contains the semester schedule.")
 	fmt.Println(`e.g.:
-	weekday;class_id;start_hour;end_hour;desc
+	weekday;class_id;start_hour;end_hour
 	#SSDD <- This is a comment
-	Lx;ssdd;17:00;17:50;"
-	This is a description
-	It can be multiline
-	https://meet.google.com/ijq-umtk-ewp?pli=1&authuser=1"`)
+	Lx;ssdd;17:00;17:50`)
 
 	fmt.Println()
 
@@ -59,7 +59,10 @@ func main() {
 	flag.Usage = cliUsage
 
 	flag.IntVar(&semesterNum, "s", 1, "semester (1 or 2)")
-	flag.Var(&exportType, "e", "export type (text, org)")
+	flag.Var(&exportType, "e", fmt.Sprintf(
+		"export type (%s)",
+		strings.Join(exports.ExportTypes(), ","),
+	))
 	flag.Parse()
 
 	if semesterNum != 1 && semesterNum != 2 {

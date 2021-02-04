@@ -15,6 +15,10 @@ func (e *ExportType) String() string {
 	return "export type"
 }
 
+func ExportTypes() []string {
+	return []string{"org", "gcal"}
+}
+
 func (e *ExportType) Set(in string) error {
 	switch in {
 	case "org":
