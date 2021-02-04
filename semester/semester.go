@@ -1,9 +1,9 @@
 package semester
 
 import (
+	"github.com/xzebra/unizar-calendar/gcal"
+	"github.com/xzebra/unizar-calendar/schedules"
 	"time"
-	"unizar-calendar/gcal"
-	"unizar-calendar/schedules"
 )
 
 var (
