@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/xzebra/unizar-calendar/exports"
-	"github.com/xzebra/unizar-calendar/schedules"
-	"github.com/xzebra/unizar-calendar/semester"
+	"github.com/xzebra/unizar-calendar/internal/exports"
+	"github.com/xzebra/unizar-calendar/internal/semester"
+	"github.com/xzebra/unizar-calendar/pkg/schedules"
 	"os"
 	"path/filepath"
 	"strings"

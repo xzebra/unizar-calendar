@@ -2,7 +2,7 @@ package gcal_test
 
 import (
 	"fmt"
-	"github.com/xzebra/unizar-calendar/gcal"
+	"github.com/xzebra/unizar-calendar/pkg/gcal"
 	"os"
 	"path"
 	"runtime"
@@ -236,7 +236,7 @@ func TestGetCalendarDays(t *testing.T) {
 func TestMain(t *testing.M) {
 	// Run everything from project root folder
 	_, filename, _, _ := runtime.Caller(0)
-	dir := path.Join(path.Dir(filename), "..")
+	dir := path.Join(path.Dir(filename), "..", "..")
 	err := os.Chdir(dir)
 	if err != nil {
 		fmt.Println("error returning to root folder: ", err)

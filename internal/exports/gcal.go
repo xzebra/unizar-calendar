@@ -2,7 +2,7 @@ package exports
 
 import (
 	"fmt"
-	"github.com/xzebra/unizar-calendar/semester"
+	"github.com/xzebra/unizar-calendar/internal/semester"
 	"strings"
 )
 
