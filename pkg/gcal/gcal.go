@@ -97,20 +97,17 @@ func (c *GoogleCalendar) GetCalendarDays(id string, timeMin, timeMax time.Time) 
 	return
 }
 
-type EventDays map[string][]time.Time
+// EventDays is a map that given a date returns the day type (La, Lb, Lx...).
+type EventDays map[time.Time]string
 
-// GetCalendarEventDays returns a map that given an event type (La, Lb...)
-// returns all days in the range which belong to given type.
+// GetCalendarEventDays returns a map that given a date, returns the
+// event type (La, Lb...) that day belongs to.
 func (c *GoogleCalendar) GetCalendarEventDays(id string, timeMin, timeMax time.Time) (out EventDays, err error) {
 	out = make(EventDays)
 
 	events, err := c.srv.GetEventsList(id, timeMin, timeMax)
 	if err != nil {
 		return nil, err
-	}
-
-	if len(events.Items) == 0 {
-		return out, nil
 	}
 
 	for _, item := range events.Items {
@@ -122,9 +119,10 @@ func (c *GoogleCalendar) GetCalendarEventDays(id string, timeMin, timeMax time.T
 		if len(item.Summary) < 2 {
 			return out, fmt.Errorf("date contains event with wrong description")
 		}
-		eventType := item.Summary[:2]
 
-		out[eventType] = append(out[eventType], date)
+		// Extract event type (La, Mb...) from day events (La1, Mb2...).
+		eventType := item.Summary[:2]
+		out[date] = eventType
 	}
 
 	return

@@ -89,14 +89,7 @@ func ParseSchedule(filename string) (out Schedule, err error) {
 	}
 
 	for _, class := range classes {
-		if class.Weekday[1] == 'x' {
-			weekdayA := class.Weekday[:1] + "a"
-			weekdayB := class.Weekday[:1] + "b"
-			out[weekdayA] = append(out[weekdayA], class)
-			out[weekdayB] = append(out[weekdayB], class)
-		} else {
-			out[class.Weekday] = append(out[class.Weekday], class)
-		}
+		out[class.Weekday] = append(out[class.Weekday], class)
 	}
 
 	return
