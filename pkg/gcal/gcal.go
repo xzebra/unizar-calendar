@@ -159,12 +159,21 @@ func (c *GoogleCalendar) GetCalendarEventMask(id string, timeMin, timeMax time.T
 	}
 
 	for _, item := range events.Items {
-		date, err := time.Parse("2006-01-02", item.Start.Date)
+		dateStart, err := time.Parse("2006-01-02", item.Start.Date)
 		if err != nil {
 			return out, err
 		}
 
-		out[date] = true
+		dateEnd, err := time.Parse("2006-01-02", item.End.Date)
+		if err != nil {
+			// Add at least the start of the event
+			out[dateStart] = true
+			return out, err
+		}
+
+		for day := dateStart; !day.After(dateEnd); day = day.Add(24 * time.Hour) {
+			out[day] = true
+		}
 	}
 
 	return
