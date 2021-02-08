@@ -23,9 +23,9 @@ func cliUsage() {
 		"Usage: %s [options] subjectsFile scheduleFile\n\n",
 		filepath.Base(os.Args[0]), // get only filename
 	)
-	fmt.Printf("Arguments:\n\n")
-	fmt.Println("subjectsFile: csv that contains a list of pairs of ID and subject name.")
-	fmt.Println(`e.g.:
+	fmt.Fprintf(flag.CommandLine.Output(), "Arguments:\n\n")
+	fmt.Fprintln(flag.CommandLine.Output(), "subjectsFile: csv that contains a list of pairs of ID and subject name.")
+	fmt.Fprintln(flag.CommandLine.Output(), `e.g.:
 	class_id;class_name;class_desc
 	ph;Proyecto Hardware;""
 	ia;Inteligencia Artificial;""
@@ -34,17 +34,17 @@ func cliUsage() {
 	It can be multiline
 	https://meet.google.com/ijq-umtk-ewp?pli=1&authuser=1"`)
 
-	fmt.Println()
+	fmt.Fprintln(flag.CommandLine.Output())
 
-	fmt.Println("scheduleFile: csv that contains the semester schedule.")
-	fmt.Println(`e.g.:
+	fmt.Fprintln(flag.CommandLine.Output(), "scheduleFile: csv that contains the semester schedule.")
+	fmt.Fprintln(flag.CommandLine.Output(), `e.g.:
 	weekday;class_id;start_hour;end_hour
 	#SSDD <- This is a comment
 	Lx;ssdd;17:00;17:50`)
 
-	fmt.Println()
+	fmt.Fprintln(flag.CommandLine.Output())
 
-	fmt.Println("Options:")
+	fmt.Fprintln(flag.CommandLine.Output(), "Options:")
 	flag.PrintDefaults()
 }
 
@@ -52,6 +52,7 @@ func main() {
 	log.SetFlags(0)
 
 	var semesterNum int
+	var outputFile string
 	var exportType exports.ExportType = exports.OrgExport
 
 	// Rewrite flag.Usage to show information for positional arguments
@@ -59,6 +60,7 @@ func main() {
 	flag.Usage = cliUsage
 
 	flag.IntVar(&semesterNum, "s", 1, "semester (1 or 2)")
+	flag.StringVar(&outputFile, "o", "", "outputFile")
 	flag.Var(&exportType, "e", fmt.Sprintf(
 		"export type (%s)",
 		strings.Join(exports.ExportTypes(), ","),
@@ -91,6 +93,16 @@ func main() {
 		}, semesterNum)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if outputFile != "" {
+		f, err := os.OpenFile(outputFile, os.O_RDWR|os.O_CREATE, 0666)
+		if err != nil {
+			log.Fatalf("error opening output file: %v", err)
+		}
+		defer f.Close()
+
+		log.SetOutput(f)
 	}
 
 	log.Print(exports.Export(data, exportType))
