@@ -2,10 +2,19 @@ package gcal
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"google.golang.org/api/calendar/v3"
 )
+
+var daysByWeekday = map[string]byte{
+	"lunes":     'L',
+	"martes":    'M',
+	"miércoles": 'X',
+	"jueves":    'J',
+	"viernes":   'V',
+}
 
 type GcalService interface {
 	GetEventsList(calendarID string, timeMin, timeMax time.Time) (events *calendar.Events, err error)
@@ -120,8 +129,17 @@ func (c *GoogleCalendar) GetCalendarEventDays(id string, timeMin, timeMax time.T
 			return out, fmt.Errorf("date contains event with wrong description")
 		}
 
-		// Extract event type (La, Mb...) from day events (La1, Mb2...).
-		eventType := item.Summary[:2]
+		var eventType string
+		// Day type change in non practical days
+		if strings.HasPrefix(item.Summary, "Horario de ") {
+			eventType = fmt.Sprintf("%c%c",
+				daysByWeekday[strings.TrimPrefix(item.Summary, "Horario de ")],
+				'x',
+			)
+		} else {
+			// Extract event type (La, Mb...) from day events (La1, Mb2...).
+			eventType = item.Summary[:2]
+		}
 		out[date] = eventType
 	}
 
