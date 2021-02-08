@@ -142,7 +142,7 @@ func addRestOfLectiveDays(cal *gcal.GoogleCalendar, semester *Semester, days gca
 	}
 
 	// Iterate semester days
-	for day := semester.Begin; day.Before(semester.End); day = day.Add(time.Hour * 24) {
+	for day := semester.Begin; !day.After(semester.End); day = day.Add(time.Hour * 24) {
 		// Skip weekends
 		if day.Weekday() == time.Saturday || day.Weekday() == time.Sunday {
 			continue
