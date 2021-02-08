@@ -1,0 +1,36 @@
+name: deploy
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # daily
+jobs:
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout config
+        uses: actions/checkout@v2
+        
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+          
+      - name: Build deployer executable
+        run: go build -v -o bin ./cmd/webdata
+        
+      - name: Run deployer executable and publish results
+        run: |
+          ./bin/webdata
+          mkdir ./publish
+          mv -f data.csv ./publish/data.csv
+          
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./publish
+          force_orphan: true
