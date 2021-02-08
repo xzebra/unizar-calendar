@@ -39,14 +39,14 @@ func TestParseSchedule(t *testing.T) {
 		End:     hour{17, 50},
 	}
 	class2 := &ScheduleClass{
-		Weekday: "Lx",
+		Weekday: "Lb",
 		ID:      "ing_soft",
 		Start:   hour{18, 10},
 		End:     hour{19, 00},
 	}
 	expected := Schedule{
-		"La": {class1, class2},
-		"Lb": {class1, class2},
+		"Lx": {class1},
+		"Lb": {class2},
 	}
 
 	returned, err := ParseSchedule("./testdata/problemas.csv")
