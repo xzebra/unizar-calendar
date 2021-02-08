@@ -10,6 +10,7 @@ const (
 	gcalCSVSeparator  = ","
 	gcalCSVDateFormat = "2006-01-02"
 	gcalCSVTimeFormat = "03:04:05 PM"
+	gcalCSVPrivate    = "False"
 )
 
 var gcalCSVHeader = strings.Join([]string{
@@ -47,7 +48,7 @@ func toGcal(s *semester.Data) string {
 			// Description
 			out.WriteString(fmt.Sprintf("\"%s\"%s", desc, gcalCSVSeparator))
 			// Private
-			out.WriteString("True\n")
+			out.WriteString(gcalCSVPrivate + "\n")
 		}
 	}
 
