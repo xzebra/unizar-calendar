@@ -71,6 +71,10 @@ func (c *GoogleCalendar) GetCalendarEvents(id string, timeMin, timeMax time.Time
 			end, err = time.Parse(time.RFC3339, event.End.DateTime)
 		}
 
+		if err != nil {
+			return
+		}
+
 		out = append(out, &Event{
 			Name:  event.Summary,
 			Start: start,
