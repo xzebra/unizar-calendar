@@ -1,9 +1,11 @@
 package semester
 
 import (
-	"github.com/xzebra/unizar-calendar/gcal"
-	"github.com/xzebra/unizar-calendar/schedules"
+	"fmt"
 	"time"
+
+	"github.com/xzebra/unizar-calendar/pkg/gcal"
+	"github.com/xzebra/unizar-calendar/pkg/schedules"
 )
 
 var (
@@ -91,6 +93,7 @@ type Data struct {
 	Merged map[string][]timeRange
 }
 
+// mergeDayTypes joins both EventDays objects.
 func mergeDayTypes(a, b gcal.EventDays) (c gcal.EventDays) {
 	c = make(gcal.EventDays)
 	for k, v := range a {
@@ -132,6 +135,47 @@ func getCalendarDays(
 	return mergeDayTypes(daysTypeA, daysTypeB), nil
 }
 
+func addRestOfLectiveDays(cal *gcal.GoogleCalendar, semester *Semester, days gcal.EventDays) error {
+	holidaysMask, err := cal.GetCalendarEventMask(holidays, semester.Begin, semester.End)
+	if err != nil {
+		return err
+	}
+
+	// Iterate semester days
+	for day := semester.Begin; !day.After(semester.End); day = day.Add(time.Hour * 24) {
+		// Skip weekends
+		if day.Weekday() == time.Saturday || day.Weekday() == time.Sunday {
+			continue
+		}
+
+		// Skip days which have a day type
+		if _, ok := days[day]; ok {
+			continue
+		}
+
+		// Skip holidays
+		if holidaysMask[day] {
+			continue
+		}
+
+		// Add a wildcard event
+		switch day.Weekday() {
+		case time.Monday:
+			days[day] = "Lx"
+		case time.Tuesday:
+			days[day] = "Mx"
+		case time.Wednesday:
+			days[day] = "Xx"
+		case time.Thursday:
+			days[day] = "Jx"
+		case time.Friday:
+			days[day] = "Vx"
+		}
+	}
+
+	return nil
+}
+
 func NewData(files *schedules.SemesterFiles, number int) (*Data, error) {
 	parsed, err := schedules.ParseSemesterFiles(files)
 	if err != nil {
@@ -153,6 +197,11 @@ func NewData(files *schedules.SemesterFiles, number int) (*Data, error) {
 		return nil, err
 	}
 
+	err = addRestOfLectiveDays(cal, semester, daysType)
+	if err != nil {
+		return nil, err
+	}
+
 	s := &Data{
 		Semester: semester,
 		Schedule: parsed.Schedule,
@@ -164,24 +213,39 @@ func NewData(files *schedules.SemesterFiles, number int) (*Data, error) {
 	return s, nil
 }
 
+func isWildcardDay(dayType string) bool {
+	return dayType[1] == 'x'
+}
+
+// getSchedGivenDayType returns the schedule associated with a day
+// type. If that day type is a non wildcard day, it also returns the
+// wildcarded classes (classes that happen all weeks).
+func (s *Data) getSchedGivenDayType(dayType string) (sched []*schedules.ScheduleClass) {
+	sched = s.Schedule[dayType]
+	if !isWildcardDay(dayType) {
+		// We have to extract also the wildcard day classes.
+		wildcardType := fmt.Sprintf("%c%c", dayType[0], 'x')
+		for _, class := range s.Schedule[wildcardType] {
+			sched = append(sched, class)
+		}
+	}
+	return
+}
+
 func (s *Data) mergeClassesDays() {
 	s.Merged = make(map[string][]timeRange)
 
 	// For each type of day
-	for dayType, days := range s.Days {
-		// Get classes on that day type
-		sched := s.Schedule[dayType]
+	for day, dayType := range s.Days {
+		sched := s.getSchedGivenDayType(dayType)
 
 		// For each class on that day type
 		for _, class := range sched {
-			// For each day that matches that type of day
-			for _, day := range days {
-				// Add times associated to class
-				s.Merged[class.ID] = append(s.Merged[class.ID], timeRange{
-					Start: class.Start.AddTo(day),
-					End:   class.End.AddTo(day),
-				})
-			}
+			// Add times associated to class
+			s.Merged[class.ID] = append(s.Merged[class.ID], timeRange{
+				Start: class.Start.AddTo(day),
+				End:   class.End.AddTo(day),
+			})
 		}
 	}
 }

@@ -2,10 +2,19 @@ package gcal
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"google.golang.org/api/calendar/v3"
 )
+
+var daysByWeekday = map[string]byte{
+	"lunes":     'L',
+	"martes":    'M',
+	"miércoles": 'X',
+	"jueves":    'J',
+	"viernes":   'V',
+}
 
 type GcalService interface {
 	GetEventsList(calendarID string, timeMin, timeMax time.Time) (events *calendar.Events, err error)
@@ -62,6 +71,10 @@ func (c *GoogleCalendar) GetCalendarEvents(id string, timeMin, timeMax time.Time
 			end, err = time.Parse(time.RFC3339, event.End.DateTime)
 		}
 
+		if err != nil {
+			return
+		}
+
 		out = append(out, &Event{
 			Name:  event.Summary,
 			Start: start,
@@ -97,20 +110,17 @@ func (c *GoogleCalendar) GetCalendarDays(id string, timeMin, timeMax time.Time) 
 	return
 }
 
-type EventDays map[string][]time.Time
+// EventDays is a map that given a date returns the day type (La, Lb, Lx...).
+type EventDays map[time.Time]string
 
-// GetCalendarEventDays returns a map that given an event type (La, Lb...)
-// returns all days in the range which belong to given type.
+// GetCalendarEventDays returns a map that given a date, returns the
+// event type (La, Lb...) that day belongs to.
 func (c *GoogleCalendar) GetCalendarEventDays(id string, timeMin, timeMax time.Time) (out EventDays, err error) {
 	out = make(EventDays)
 
 	events, err := c.srv.GetEventsList(id, timeMin, timeMax)
 	if err != nil {
 		return nil, err
-	}
-
-	if len(events.Items) == 0 {
-		return out, nil
 	}
 
 	for _, item := range events.Items {
@@ -122,9 +132,19 @@ func (c *GoogleCalendar) GetCalendarEventDays(id string, timeMin, timeMax time.T
 		if len(item.Summary) < 2 {
 			return out, fmt.Errorf("date contains event with wrong description")
 		}
-		eventType := item.Summary[:2]
 
-		out[eventType] = append(out[eventType], date)
+		var eventType string
+		// Day type change in non practical days
+		if strings.HasPrefix(item.Summary, "Horario de ") {
+			eventType = fmt.Sprintf("%c%c",
+				daysByWeekday[strings.TrimPrefix(item.Summary, "Horario de ")],
+				'x',
+			)
+		} else {
+			// Extract event type (La, Mb...) from day events (La1, Mb2...).
+			eventType = item.Summary[:2]
+		}
+		out[date] = eventType
 	}
 
 	return
@@ -143,12 +163,21 @@ func (c *GoogleCalendar) GetCalendarEventMask(id string, timeMin, timeMax time.T
 	}
 
 	for _, item := range events.Items {
-		date, err := time.Parse("2006-01-02", item.Start.Date)
+		dateStart, err := time.Parse("2006-01-02", item.Start.Date)
 		if err != nil {
 			return out, err
 		}
 
-		out[date] = true
+		dateEnd, err := time.Parse("2006-01-02", item.End.Date)
+		if err != nil {
+			// Add at least the start of the event
+			out[dateStart] = true
+			return out, err
+		}
+
+		for day := dateStart; !day.After(dateEnd); day = day.Add(24 * time.Hour) {
+			out[day] = true
+		}
 	}
 
 	return

@@ -39,14 +39,14 @@ func TestParseSchedule(t *testing.T) {
 		End:     hour{17, 50},
 	}
 	class2 := &ScheduleClass{
-		Weekday: "Lx",
+		Weekday: "Lb",
 		ID:      "ing_soft",
 		Start:   hour{18, 10},
 		End:     hour{19, 00},
 	}
 	expected := Schedule{
-		"La": {class1, class2},
-		"Lb": {class1, class2},
+		"Lx": {class1},
+		"Lb": {class2},
 	}
 
 	returned, err := ParseSchedule("./testdata/problemas.csv")
@@ -62,7 +62,7 @@ func TestParseSchedule(t *testing.T) {
 func TestMain(t *testing.M) {
 	// Run everything from project root folder
 	_, filename, _, _ := runtime.Caller(0)
-	dir := path.Join(path.Dir(filename), "..")
+	dir := path.Join(path.Dir(filename), "..", "..")
 	err := os.Chdir(dir)
 	if err != nil {
 		fmt.Println("error returning to root folder: ", err)

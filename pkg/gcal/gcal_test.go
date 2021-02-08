@@ -2,7 +2,7 @@ package gcal_test
 
 import (
 	"fmt"
-	"github.com/xzebra/unizar-calendar/gcal"
+	"github.com/xzebra/unizar-calendar/pkg/gcal"
 	"os"
 	"path"
 	"runtime"
@@ -67,7 +67,13 @@ var testdata = mockupData{
 		{},
 		{},
 		{},
-		{},
+		{ // Navidad
+			{
+				Summary: "Navidad",
+				Start:   &calendar.EventDateTime{Date: "2016-12-23"},
+				End:     &calendar.EventDateTime{Date: "2016-12-31"},
+			},
+		},
 	},
 }
 
@@ -180,20 +186,12 @@ func TestGetCalendarEventDays(t *testing.T) {
 	timeBegin := time.Date(2016, time.May, 1, 0, 0, 0, 0, time.UTC)
 	timeEnd := time.Date(2016, time.May, 31, 0, 0, 0, 0, time.UTC)
 
-	testData := map[string][]time.Time{
-		"La": {
-			time.Date(2016, time.May, 3, 0, 0, 0, 0, time.UTC),
-			time.Date(2016, time.May, 17, 0, 0, 0, 0, time.UTC),
-		},
-		"Ma": {
-			time.Date(2016, time.May, 4, 0, 0, 0, 0, time.UTC),
-		},
-		"Lb": {
-			time.Date(2016, time.May, 11, 0, 0, 0, 0, time.UTC),
-		},
-		"Mb": {
-			time.Date(2016, time.May, 12, 0, 0, 0, 0, time.UTC),
-		},
+	testData := gcal.EventDays{
+		time.Date(2016, time.May, 3, 0, 0, 0, 0, time.UTC):  "La",
+		time.Date(2016, time.May, 17, 0, 0, 0, 0, time.UTC): "La",
+		time.Date(2016, time.May, 4, 0, 0, 0, 0, time.UTC):  "Ma",
+		time.Date(2016, time.May, 11, 0, 0, 0, 0, time.UTC): "Lb",
+		time.Date(2016, time.May, 12, 0, 0, 0, 0, time.UTC): "Mb",
 	}
 
 	eventDays, err := cal.GetCalendarEventDays(
@@ -222,10 +220,36 @@ func TestGetCalendarDays(t *testing.T) {
 	returned, err := cal.GetCalendarDays(ignoreID, timeBegin, timeEnd)
 	assert.Nil(t, err)
 
-	assert.Equal(t, len(eventDayMask), len(returned))
-
 	for _, event := range returned {
 		assert.True(t, eventDayMask[event])
+	}
+}
+
+func TestGetCalendarEventMask(t *testing.T) {
+	timeStart := time.Date(2016, time.December, 1, 0, 0, 0, 0, time.UTC)
+	timeEnd := time.Date(2016, time.December, 31, 0, 0, 0, 0, time.UTC)
+
+	mask, err := cal.GetCalendarEventMask(ignoreID, timeStart, timeEnd)
+	assert.Nil(t, err)
+
+	// generate expected mask
+	expectedMask := map[time.Time]bool{
+		time.Date(2016, time.December, 23, 0, 0, 0, 0, time.UTC): true,
+		time.Date(2016, time.December, 24, 0, 0, 0, 0, time.UTC): true,
+		time.Date(2016, time.December, 25, 0, 0, 0, 0, time.UTC): true,
+		time.Date(2016, time.December, 26, 0, 0, 0, 0, time.UTC): true,
+		time.Date(2016, time.December, 27, 0, 0, 0, 0, time.UTC): true,
+		time.Date(2016, time.December, 28, 0, 0, 0, 0, time.UTC): true,
+		time.Date(2016, time.December, 29, 0, 0, 0, 0, time.UTC): true,
+		time.Date(2016, time.December, 30, 0, 0, 0, 0, time.UTC): true,
+		time.Date(2016, time.December, 31, 0, 0, 0, 0, time.UTC): true,
+	}
+
+	for day, _ := range mask {
+		assert.True(t, expectedMask[day])
+	}
+	for day, _ := range expectedMask {
+		assert.True(t, mask[day])
 	}
 }
 
@@ -236,7 +260,7 @@ func TestGetCalendarDays(t *testing.T) {
 func TestMain(t *testing.M) {
 	// Run everything from project root folder
 	_, filename, _, _ := runtime.Caller(0)
-	dir := path.Join(path.Dir(filename), "..")
+	dir := path.Join(path.Dir(filename), "..", "..")
 	err := os.Chdir(dir)
 	if err != nil {
 		fmt.Println("error returning to root folder: ", err)

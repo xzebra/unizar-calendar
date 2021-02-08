@@ -2,14 +2,18 @@ package exports
 
 import (
 	"fmt"
-	"github.com/xzebra/unizar-calendar/semester"
 	"strings"
+	"time"
+
+	"github.com/xzebra/unizar-calendar/internal/semester"
 )
 
 const (
 	gcalCSVSeparator  = ","
 	gcalCSVDateFormat = "2006-01-02"
 	gcalCSVTimeFormat = "03:04:05 PM"
+	gcalCSVPrivate    = "False"
+	utcFix            = -time.Hour
 )
 
 var gcalCSVHeader = strings.Join([]string{
@@ -37,17 +41,17 @@ func toGcal(s *semester.Data) string {
 			// Subject
 			out.WriteString(fmt.Sprintf("\"%s\"%s", name, gcalCSVSeparator))
 			// Start Date
-			out.WriteString(time.Start.Format(gcalCSVDateFormat) + gcalCSVSeparator)
+			out.WriteString(time.Start.Add(utcFix).Format(gcalCSVDateFormat) + gcalCSVSeparator)
 			// Start Time
-			out.WriteString(time.Start.Format(gcalCSVTimeFormat) + gcalCSVSeparator)
+			out.WriteString(time.Start.Add(utcFix).Format(gcalCSVTimeFormat) + gcalCSVSeparator)
 			// End Date
-			out.WriteString(time.End.Format(gcalCSVDateFormat) + gcalCSVSeparator)
+			out.WriteString(time.End.Add(utcFix).Format(gcalCSVDateFormat) + gcalCSVSeparator)
 			// End Time
-			out.WriteString(time.End.Format(gcalCSVTimeFormat) + gcalCSVSeparator)
+			out.WriteString(time.End.Add(utcFix).Format(gcalCSVTimeFormat) + gcalCSVSeparator)
 			// Description
 			out.WriteString(fmt.Sprintf("\"%s\"%s", desc, gcalCSVSeparator))
 			// Private
-			out.WriteString("True\n")
+			out.WriteString(gcalCSVPrivate + "\n")
 		}
 	}
 
