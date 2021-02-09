@@ -35,7 +35,7 @@ jobs:
         run: |
           ./bin/webdata semester1.json semester2.json
           mkdir -p ./publish/data/
-          mv -f *.json ./publish/data/
+          mv -f semester*.json ./publish/data/
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
           
