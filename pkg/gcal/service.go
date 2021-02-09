@@ -1,11 +1,10 @@
 package gcal
 
 import (
+	"context"
 	"fmt"
-	"io/ioutil"
 	"time"
 
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
 )
 
@@ -14,19 +13,7 @@ type serviceImpl struct {
 }
 
 func newServiceImpl() (*serviceImpl, error) {
-	b, err := ioutil.ReadFile("credentials.json")
-	if err != nil {
-		return nil, fmt.Errorf("Unable to read client secret file: %v", err)
-	}
-
-	// If modifying these scopes, delete your previously saved token.json.
-	config, err := google.ConfigFromJSON(b, calendar.CalendarReadonlyScope)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to parse client secret file to config: %v", err)
-	}
-	client := getClient(config)
-
-	srv, err := calendar.New(client)
+	srv, err := calendar.NewService(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("Unable to retrieve Calendar client: %v", err)
 	}
