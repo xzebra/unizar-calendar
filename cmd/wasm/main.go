@@ -1,3 +1,5 @@
+// +build js
+
 // WebAssembly wrapper functions to use from a web client.
 package main
 
