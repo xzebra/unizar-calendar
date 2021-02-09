@@ -34,13 +34,13 @@ func TestNewData(t *testing.T) {
 	assert.Equal(t,
 		map[string][]timeRange{
 			"ssdd": {
-				{ // Lx
-					Start: time.Date(2021, 1, 11, 17, 0, 0, 0, time.UTC),
-					End:   time.Date(2021, 1, 11, 17, 50, 0, 0, time.UTC),
-				},
 				{ // Lb
 					Start: time.Date(2020, 12, 21, 17, 0, 0, 0, time.UTC),
 					End:   time.Date(2020, 12, 21, 17, 50, 0, 0, time.UTC),
+				},
+				{ // Lx
+					Start: time.Date(2021, 1, 11, 17, 0, 0, 0, time.UTC),
+					End:   time.Date(2021, 1, 11, 17, 50, 0, 0, time.UTC),
 				},
 			},
 			"ing_soft": {
@@ -63,5 +63,6 @@ func TestNewData(t *testing.T) {
 			},
 		},
 		data.Merged,
+		"merged data doesn't mach",
 	)
 }
