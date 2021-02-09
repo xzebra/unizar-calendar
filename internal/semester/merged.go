@@ -31,12 +31,26 @@ func isWildcardDay(dayType string) bool {
 	return dayType[1] == 'x'
 }
 
+func removePracticalClasses(sched []*schedules.ScheduleClass) []*schedules.ScheduleClass {
+	var out []*schedules.ScheduleClass
+
+	for _, class := range sched {
+		if !class.IsPractical {
+			out = append(out, class)
+		}
+	}
+
+	return out
+}
+
 // getSchedGivenDayType returns the schedule associated with a day
 // type. If that day type is a non wildcard day, it also returns the
 // wildcarded classes (classes that happen all weeks).
 func (s *Data) getSchedGivenDayType(dayType string) (sched []*schedules.ScheduleClass) {
 	sched = s.Schedule[dayType]
-	if !isWildcardDay(dayType) {
+	if isWildcardDay(dayType) { // Day with classes but not practical classes
+		sched = removePracticalClasses(sched)
+	} else { // Day with practical classes
 		// We have to extract also the wildcard day classes.
 		wildcardType := fmt.Sprintf("%c%c", dayType[0], 'x')
 		for _, class := range s.Schedule[wildcardType] {

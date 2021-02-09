@@ -44,10 +44,11 @@ type ClassName struct {
 type Schedule map[string][]*ScheduleClass
 
 type ScheduleClass struct {
-	Weekday string `csv:"weekday"`
-	ID      string `csv:"class_id"`
-	Start   hour   `csv:"start_hour"`
-	End     hour   `csv:"end_hour"`
+	Weekday     string `csv:"weekday"`
+	ID          string `csv:"class_id"`
+	Start       hour   `csv:"start_hour"`
+	End         hour   `csv:"end_hour"`
+	IsPractical bool   `csv:"is_practical"`
 }
 
 func ParseClassNames(in io.Reader) (out ClassNames, err error) {
