@@ -3,6 +3,7 @@ package semester
 import (
 	"io/ioutil"
 	"os"
+	"sort"
 	"testing"
 	"time"
 
@@ -30,38 +31,50 @@ func TestNewData(t *testing.T) {
 	data, err := NewData(sem, parsed, 1)
 	assert.Nil(t, err)
 
-	// Check: Merged map[string][]timeRange
-	assert.Equal(t,
-		map[string][]timeRange{
-			"ssdd": {
-				{ // Lx
-					Start: time.Date(2021, 1, 11, 17, 0, 0, 0, time.UTC),
-					End:   time.Date(2021, 1, 11, 17, 50, 0, 0, time.UTC),
-				},
-				{ // Lb
-					Start: time.Date(2020, 12, 21, 17, 0, 0, 0, time.UTC),
-					End:   time.Date(2020, 12, 21, 17, 50, 0, 0, time.UTC),
-				},
+	expected := map[string][]timeRange{
+		"ssdd": {
+			{ // Lb
+				Start: time.Date(2020, 12, 21, 17, 0, 0, 0, time.UTC),
+				End:   time.Date(2020, 12, 21, 17, 50, 0, 0, time.UTC),
 			},
-			"ing_soft": {
-				{ // Lb
-					Start: time.Date(2020, 12, 21, 18, 10, 0, 0, time.UTC),
-					End:   time.Date(2020, 12, 21, 19, 00, 0, 0, time.UTC),
-				},
-			},
-			"ph": {
-				{ // Lb
-					Start: time.Date(2020, 12, 21, 10, 0, 0, 0, time.UTC),
-					End:   time.Date(2020, 12, 21, 14, 0, 0, 0, time.UTC),
-				},
-			},
-			"ia": {
-				{ // Mb
-					Start: time.Date(2020, 12, 22, 17, 0, 0, 0, time.UTC),
-					End:   time.Date(2020, 12, 22, 20, 0, 0, 0, time.UTC),
-				},
+			{ // Lx
+				Start: time.Date(2021, 1, 11, 17, 0, 0, 0, time.UTC),
+				End:   time.Date(2021, 1, 11, 17, 50, 0, 0, time.UTC),
 			},
 		},
-		data.Merged,
-	)
+		"ing_soft": {
+			{ // Lb
+				Start: time.Date(2020, 12, 21, 18, 10, 0, 0, time.UTC),
+				End:   time.Date(2020, 12, 21, 19, 00, 0, 0, time.UTC),
+			},
+		},
+		"ph": {
+			{ // Lb
+				Start: time.Date(2020, 12, 21, 10, 0, 0, 0, time.UTC),
+				End:   time.Date(2020, 12, 21, 14, 0, 0, 0, time.UTC),
+			},
+		},
+		"ia": {
+			{ // Mb
+				Start: time.Date(2020, 12, 22, 17, 0, 0, 0, time.UTC),
+				End:   time.Date(2020, 12, 22, 20, 0, 0, 0, time.UTC),
+			},
+		},
+	}
+
+	assert.Equal(t, len(expected), len(data.Merged))
+
+	for k, a := range expected {
+		b := data.Merged[k]
+
+		sort.Slice(a, func(i, j int) bool {
+			return a[i].Start.Before(a[j].Start)
+		})
+
+		sort.Slice(b, func(i, j int) bool {
+			return b[i].Start.Before(b[j].Start)
+		})
+
+		assert.Equal(t, a, b)
+	}
 }
