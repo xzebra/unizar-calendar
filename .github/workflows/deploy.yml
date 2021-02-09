@@ -3,6 +3,7 @@ name: deploy
 on:
   schedule:
     - cron: "0 0 * * *" # daily
+  workflow_dispatch:
 jobs:
   deploy:
     # The type of runner that the job will run on
