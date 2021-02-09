@@ -3,12 +3,15 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/xzebra/unizar-calendar/internal/exports"
-	"github.com/xzebra/unizar-calendar/internal/semester"
-	"github.com/xzebra/unizar-calendar/pkg/schedules"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/xzebra/unizar-calendar/internal/exports"
+	"github.com/xzebra/unizar-calendar/internal/semester"
+	"github.com/xzebra/unizar-calendar/pkg/schedules"
 
 	"flag"
 	"log"
@@ -16,6 +19,10 @@ import (
 
 var (
 	ErrInvalidSemester = errors.New("semester parameter invalid")
+)
+
+var (
+	semesterDataURL = "https://xzebra.github.io/unizar-calendar/data/semester%d.json"
 )
 
 func cliUsage() {
@@ -86,7 +93,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	semesterData, err := getSemesterData(semesterNum)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sem, err := semester.NewSemesterFromData(semesterData)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	data, err := semester.NewData(
+		sem,
 		&schedules.SemesterFiles{
 			Subjects: subjectsFile,
 			Schedule: scheduleFile,
@@ -106,4 +124,14 @@ func main() {
 	}
 
 	log.Print(exports.Export(data, exportType))
+}
+
+func getSemesterData(semesterNum int) ([]byte, error) {
+	resp, err := http.Get(fmt.Sprintf(semesterDataURL, semesterNum))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return ioutil.ReadAll(resp.Body)
 }
