@@ -3,7 +3,6 @@ package semester
 import (
 	"fmt"
 
-	"github.com/xzebra/unizar-calendar/pkg/gcal"
 	"github.com/xzebra/unizar-calendar/pkg/schedules"
 )
 
@@ -14,21 +13,11 @@ type Data struct {
 
 	// Merged is an association between class ids and a list of all
 	// days when the class should occur.
-	Merged map[string][]timeRange `json:"-"`
+	Merged map[string][]timeRange
 }
 
-func NewData(files *schedules.SemesterFiles, number int) (*Data, error) {
+func NewData(semester *Semester, files *schedules.SemesterFiles, number int) (*Data, error) {
 	parsed, err := schedules.ParseSemesterFiles(files)
-	if err != nil {
-		return nil, err
-	}
-
-	cal, err := gcal.NewGoogleCalendar()
-	if err != nil {
-		return nil, err
-	}
-
-	semester, err := NewSemester(cal, number)
 	if err != nil {
 		return nil, err
 	}

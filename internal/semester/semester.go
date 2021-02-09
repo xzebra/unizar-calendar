@@ -1,6 +1,7 @@
 package semester
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/xzebra/unizar-calendar/pkg/gcal"
@@ -77,6 +78,12 @@ func NewSemester(cal *gcal.GoogleCalendar, number int) (semester *Semester, err 
 	}
 
 	return semester, nil
+}
+
+func NewSemesterFromData(data []byte) (semester *Semester, err error) {
+	semester = &Semester{}
+	err = json.Unmarshal(data, semester)
+	return
 }
 
 type timeRange struct {
