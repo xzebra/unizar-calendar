@@ -1,0 +1,9 @@
+weekday;class_id;start_hour;end_hour;is_practical
+#SSDD class
+Lx;ssdd;17:00;17:50;false
+#Ing Soft class
+Lb;ing_soft;18:10;19:00;false
+#PH practical class
+Lx;ph;10:00;14:00;true
+#IA practical class
+Mb;ia;17:00;20:00;true

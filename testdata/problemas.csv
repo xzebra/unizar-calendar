@@ -1,6 +1,6 @@
-weekday;class_id;start_hour;end_hour
+weekday;class_id;start_hour;end_hour;is_practical
 #SSDD
-Lx;ssdd;17:00;17:50
+Lx;ssdd;17:00;17:50;false
 
 #Ing Soft
-Lb;ing_soft;18:10;19:00
+Lb;ing_soft;18:10;19:00;false
