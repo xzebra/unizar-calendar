@@ -103,12 +103,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	data, err := semester.NewData(
-		sem,
-		&schedules.SemesterFiles{
-			Subjects: subjectsFile,
-			Schedule: scheduleFile,
-		}, semesterNum)
+	parsed, err := schedules.ParseSemesterFiles(&schedules.SemesterFiles{
+		Subjects: subjectsFile,
+		Schedule: scheduleFile,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data, err := semester.NewData(sem, parsed, semesterNum)
 	if err != nil {
 		log.Fatal(err)
 	}
