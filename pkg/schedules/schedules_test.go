@@ -25,7 +25,11 @@ func TestParseClassNames(t *testing.T) {
 		"ssdd":      &ClassName{ID: "ssdd", Name: "Sistemas Distribuidos", Desc: ""},
 	}
 
-	returned, err := ParseClassNames("./testdata/asignaturas.csv")
+	f, err := os.Open("./testdata/asignaturas.csv")
+	assert.Nil(t, err)
+	defer f.Close()
+
+	returned, err := ParseClassNames(f)
 	assert.Nil(t, err)
 
 	assert.Equal(t, expected, returned)
@@ -49,7 +53,11 @@ func TestParseSchedule(t *testing.T) {
 		"Lb": {class2},
 	}
 
-	returned, err := ParseSchedule("./testdata/problemas.csv")
+	f2, err := os.Open("./testdata/problemas.csv")
+	assert.Nil(t, err)
+	defer f2.Close()
+
+	returned, err := ParseSchedule(f2)
 	assert.Nil(t, err)
 
 	assert.Equal(t, expected, returned)
