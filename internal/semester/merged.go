@@ -16,12 +16,7 @@ type Data struct {
 	Merged map[string][]timeRange
 }
 
-func NewData(semester *Semester, files *schedules.SemesterFiles, number int) (*Data, error) {
-	parsed, err := schedules.ParseSemesterFiles(files)
-	if err != nil {
-		return nil, err
-	}
-
+func NewData(semester *Semester, parsed *schedules.ParsedSemesterFiles, number int) (*Data, error) {
 	s := &Data{
 		Semester: semester,
 		Schedule: parsed.Schedule,

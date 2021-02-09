@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gocarina/gocsv"
@@ -49,13 +50,8 @@ type ScheduleClass struct {
 	End     hour   `csv:"end_hour"`
 }
 
-func ParseClassNames(filename string) (out ClassNames, err error) {
+func ParseClassNames(in io.Reader) (out ClassNames, err error) {
 	out = make(ClassNames)
-
-	f, err := os.Open(filename)
-	if err != nil {
-		return out, err
-	}
 
 	var classes []*ClassName
 	gocsv.SetCSVReader(func(in io.Reader) gocsv.CSVReader {
@@ -64,7 +60,7 @@ func ParseClassNames(filename string) (out ClassNames, err error) {
 		r.Comment = '#'
 		return r
 	})
-	if err = gocsv.UnmarshalFile(f, &classes); err != nil {
+	if err = gocsv.Unmarshal(in, &classes); err != nil {
 		return
 	}
 
@@ -75,16 +71,11 @@ func ParseClassNames(filename string) (out ClassNames, err error) {
 	return
 }
 
-func ParseSchedule(filename string) (out Schedule, err error) {
+func ParseSchedule(in io.Reader) (out Schedule, err error) {
 	out = make(Schedule)
 
-	f, err := os.Open(filename)
-	if err != nil {
-		return out, err
-	}
-
 	var classes []*ScheduleClass
-	if err = gocsv.UnmarshalFile(f, &classes); err != nil {
+	if err = gocsv.Unmarshal(in, &classes); err != nil {
 		return
 	}
 
@@ -105,13 +96,45 @@ type ParsedSemesterFiles struct {
 	Schedule Schedule
 }
 
-func ParseSemesterFiles(files *SemesterFiles) (sem ParsedSemesterFiles, err error) {
-	sem.Names, err = ParseClassNames(files.Subjects)
+// ParseSemesterFiles parses the files referenced by <data>.Subjects
+// and <data>.Schedule filenames.
+func ParseSemesterFiles(files *SemesterFiles) (sem *ParsedSemesterFiles, err error) {
+	sem = &ParsedSemesterFiles{}
+
+	// Get io.Readers from files
+	subjects, err := os.Open(files.Subjects)
+	if err != nil {
+		return
+	}
+	defer subjects.Close()
+
+	schedules, err := os.Open(files.Schedule)
+	if err != nil {
+		return
+	}
+	defer schedules.Close()
+
+	// Parse given readers
+	sem.Names, err = ParseClassNames(subjects)
 	if err != nil {
 		return
 	}
 
-	sem.Schedule, err = ParseSchedule(files.Schedule)
+	sem.Schedule, err = ParseSchedule(schedules)
 
+	return
+}
+
+// ParseSemesterStrings parses <data>.Subjects and <data>.Schedule as
+// strings instead of as files.
+func ParseSemesterStrings(data *SemesterFiles) (sem *ParsedSemesterFiles, err error) {
+	sem = &ParsedSemesterFiles{}
+
+	sem.Names, err = ParseClassNames(strings.NewReader(data.Subjects))
+	if err != nil {
+		return
+	}
+
+	sem.Schedule, err = ParseSchedule(strings.NewReader(data.Schedule))
 	return
 }
