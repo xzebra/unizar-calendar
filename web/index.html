@@ -1,0 +1,36 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Unizar Calendar</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="manifest" href="manifest.json" />
+
+        <link rel="apple-touch-icon" href="./images/favicons/apple-touch-icon.png">
+        <link rel="icon" href="./images/favicons/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" href="./images/favicons/favicon-16x16.png" sizes="16x16">
+        <link rel="shortcut icon" href="./images/favicons/favicon.ico">
+
+        <script src="wasm_exec.js"></script>
+        <script>
+            const go = new Go();
+            WebAssembly.instantiateStreaming(fetch("calendar.wasm"), go.importObject).then((result) => {
+                go.run(result.instance);
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">
+            You are using an <strong>outdated</strong> browser. Please
+            <a href="http://browsehappy.com/">upgrade your browser</a> to improve
+            your experience.
+            </p>
+        <![endif]-->
+
+
+    </body>
+</html>
