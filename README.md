@@ -4,26 +4,6 @@
 [![GoReportCard](https://goreportcard.com/badge/github.com/xzebra/unizar-calendar?.svg)](https://goreportcard.com/report/github.com/xzebra/unizar-calendar)
 [![Docs](https://godoc.org/github.com/xzebra/unizar-calendar?status.svg)](https://godoc.org/github.com/xzebra/unizar-calendar)
 
-## Compile
-
-Compilation is automatic thanks to Go modules. That means you have to
-enable modules support by setting the environment variable
-`GO111MODULE=on`.
-
-    go build
-
-## Setup
-
-First of all, go to [Google Calendar API site](https://developers.google.com/calendar/quickstart/go), create a new project
-with the Calendar API enabled, and save the `credentials.json` file in
-this project root folder.
-
-After that, compile and run the application. It will ask you to login
-and paste the authorization code returned by Google.
-
-Once `token.json` and `credentials.json` are present in project root
-folder, you are good to go.
-
 ## Usage
 
 You can interact with the CLI by running the executable from a
@@ -32,11 +12,24 @@ flag `-h`.
 
     $ ./unizar-calendar -h
 
+## Compile
+
+Compilation is automatic thanks to Go modules. That means you have to
+enable modules support by setting the environment variable
+`GO111MODULE=on`.
+
+    go build
 
 ## Requirements
 
 -   Go 1.14 (or higher).
 -   Go modules enabled.
--   Project with Google Calendar API enabled.
--   `credentials.json` and `token.json` generated.
+
+If you are going to use the `webdata` module or `pkg/gcal`, you need
+the following:
+-   Project with [Google Calendar API site](https://developers.google.com/calendar/quickstart/go) enabled.
+-   Create a Service Account.
+-   Download JSON credentials of Service Account.
+-   Set the path to the JSON file in the
+    `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
 
