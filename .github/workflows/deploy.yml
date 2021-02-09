@@ -22,11 +22,19 @@ jobs:
       - name: Build deployer executable
         run: go build -v -o bin ./cmd/webdata
         
+      - name: Extract service account data
+        run: |
+          echo $SERVICE_ACCOUNT > service_account.json
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+        
       - name: Run deployer executable and publish results
         run: |
           ./bin/webdata
           mkdir ./publish
           mv -f data.csv ./publish/data.csv
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
           
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
