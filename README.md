@@ -12,6 +12,10 @@ flag `-h`.
 
     $ ./unizar-calendar -h
 
+In case you generate for Google Calendar, make sure to create a new
+calendar with the correct timezone before importing. To import a csv
+file as a calendar, check [this guide](https://support.google.com/calendar/answer/37118?co=GENIE.Platform%3DDesktop&hl=en).
+
 ## Compile
 
 Compilation is automatic thanks to Go modules. That means you have to
