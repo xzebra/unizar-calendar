@@ -3,6 +3,8 @@ name: deploy
 on:
   schedule:
     - cron: "0 0 * * *" # daily
+  push:
+    branches: [master]
   workflow_dispatch:
 jobs:
   deploy:
@@ -45,8 +47,8 @@ jobs:
 
       - name: Setup deployment
         run: |
-          mkdir -p ./publish/data/
-          mv -f semester*.json ./publish/data/
+          mkdir -p ./publish
+          mv -f semester*.json ./web/public/data/
           mv -f web/* ./publish/
 
       - name: Deploy
