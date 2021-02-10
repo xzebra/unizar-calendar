@@ -1,0 +1,47 @@
+{
+  "name": "uzcalendar",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@assemblyscript/loader": "^0.18.7",
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.6.3",
+    "as-bind": "^0.6.0",
+    "react": "^17.0.1",
+    "react-data-grid": "^6.1.0",
+    "react-data-grid-addons": "^6.1.0",
+    "react-dom": "^17.0.1",
+    "react-hook-form": "^6.15.1",
+    "react-scripts": "4.0.2",
+    "styled-components": "^5.2.1",
+    "web-vitals": "^1.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.18.7"
+  }
+}
