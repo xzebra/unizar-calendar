@@ -8,9 +8,6 @@ import "react-popupbox/dist/react-popupbox.css"
 import renderPopup from './ResultServe'
 import fileDownload from 'js-file-download';
 
-import semester1 from './data/semester1.json';
-import semester2 from './data/semester2.json';
-
 const { DropDownEditor } = Editors;
 const { ContextMenuTrigger } = Menu;
 
@@ -83,10 +80,10 @@ export default function CalendarForm() {
   const [result, setResult] = useState("");
 
   useEffect(() => {
-    fetch(semester1)
+    fetch(process.env.PUBLIC_URL + '/data/semester1.json')
       .then(response => response.text())
       .then(data => setCalendarData1(data));
-    fetch(semester2)
+    fetch(process.env.PUBLIC_URL + '/data/semester2.json')
       .then(response => response.text())
       .then(data => setCalendarData2(data));
   }, []);
@@ -106,6 +103,7 @@ export default function CalendarForm() {
       (data.semester === 1 ? calendarData1 : calendarData2),
     );
 
+    console.log(res);
     setResult(res);
 
 

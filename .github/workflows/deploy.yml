@@ -33,19 +33,21 @@ jobs:
         env:
           SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
 
+      - name: Generate calendar data
+        run: |
+          ./bin/webdata semester1.json semester2.json
+          # need to remove .gitignore as actions-gh-pages wont deploy
+          # ignored files
+          rm ./web/public/data/.gitignore
+          mv -f semester*.json ./web/public/data/
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
+
       - name: Compile WebAssembly wrapper
         run: go build -o web/calendar.wasm ./cmd/wasm/main.go
         env:
           GOOS: js
           GOARCH: wasm
-
-      - name: Generate calendar data
-        run: |
-          ./bin/webdata semester1.json semester2.json
-          mkdir -p ./web/public/data
-          mv -f semester*.json ./web/public/data/
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
 
       - name: Set up React build
         uses: actions/setup-node@v1
