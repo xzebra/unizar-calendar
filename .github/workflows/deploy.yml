@@ -61,6 +61,7 @@ jobs:
       - name: Setup deployment
         run: |
           mkdir -p ./publish
+          mkdir -p ./web/public/data/
           mv -f semester*.json ./web/public/data/
           mv -f web/build/* ./publish/
 
