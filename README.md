@@ -36,4 +36,3 @@ the following:
 -   Download JSON credentials of Service Account.
 -   Set the path to the JSON file in the
     `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
-
