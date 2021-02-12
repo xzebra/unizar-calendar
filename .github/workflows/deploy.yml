@@ -62,6 +62,7 @@ jobs:
         run: |
           mkdir -p ./publish
           mkdir -p ./web/public/data/
+          ls -la
           mv -f semester*.json ./web/public/data/
           mv -f web/build/* ./publish/
 
