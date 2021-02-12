@@ -4,6 +4,9 @@ import ReactDataGrid from 'react-data-grid';
 import { Editors, Menu } from "react-data-grid-addons";
 import DataContextMenu, { deleteRow, insertRow } from './DataContextMenu';
 import styled from "styled-components";
+import "react-popupbox/dist/react-popupbox.css"
+import renderPopup from './ResultServe'
+import fileDownload from 'js-file-download';
 
 const { DropDownEditor } = Editors;
 const { ContextMenuTrigger } = Menu;
@@ -69,11 +72,12 @@ function tableToCSV(columnData, tableData) {
 }
 
 export default function CalendarForm() {
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit } = useForm();
   const [subjects, setSubjects] = useState(subjectsRows);
   const [schedules, setSchedules] = useState(schedulesRows);
   const [calendarData1, setCalendarData1] = useState("");
   const [calendarData2, setCalendarData2] = useState("");
+  const [result, setResult] = useState("");
 
   useEffect(() => {
     fetch(`/data/semester1.json`)
@@ -91,13 +95,27 @@ export default function CalendarForm() {
     // Cast semester to integer so Golang can use it.
     data.semester = parseInt(data.semester);
 
-    console.log(window.calendar(
+    const res = window.calendar(
       data.semester,
       subjectsData,
       schedulesData,
       data.exportType,
       (data.semester === 1 ? calendarData1 : calendarData2),
-    ));
+    );
+
+    setResult(res);
+
+
+    let blob = new Blob([res], {
+      type: 'text/plain'
+    });
+    if (data.exportType === "gcal") {
+      fileDownload(blob, "calendar.csv");
+    } else if (data.exportType === "org") {
+      fileDownload(blob, "calendar.org");
+    }
+
+    // renderPopup(res, data.exportType);
   }
 
   const onSubjectsUpdated = ({ fromRow, toRow, updated }) => {
@@ -180,9 +198,9 @@ export default function CalendarForm() {
       </div>
 
       <div className="col-md-4">
-        <input type="submit" className="w-100 btn btn-primary btn-lg" />
+        <input type="submit"
+          className="w-100 btn btn-primary btn-lg" />
       </div>
-      <p>{errors.exampleRequired && <span>Some fields are required</span>}</p>
-    </Form>
+    </Form >
   );
 }

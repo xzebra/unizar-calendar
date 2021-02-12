@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import CalendarForm from './CalendarForm';
 import styled from "styled-components";
+import { PopupboxManager, PopupboxContainer } from "react-popupbox";
 import './index.css';
 
 const Centered = styled.div`
@@ -24,6 +25,7 @@ class App extends Component {
   render() {
     return (
       <Centered>
+        <PopupboxContainer />
         <CalendarForm />
       </Centered>
     );
