@@ -42,8 +42,8 @@ jobs:
       - name: Generate calendar data
         run: |
           ./bin/webdata semester1.json semester2.json
-          mkdir -p ./web/public/data
-          mv -f semester*.json ./web/public/data/
+          mkdir -p ./web/src/data
+          mv -f semester*.json ./web/src/data/
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
 
