@@ -41,9 +41,12 @@ jobs:
 
       - name: Generate calendar data
         run: |
-          ./bin/webdata semester1.json semester2.json
+          ../../../bin/webdata semester1.json semester2.json
+          pwd
+          ls -la
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
+        working-directory: web/public/data
 
       - name: Set up React build
         uses: actions/setup-node@v1
@@ -61,8 +64,6 @@ jobs:
       - name: Setup deployment
         run: |
           mkdir -p ./publish
-          mkdir -p ./web/build/data/
-          mv -f semester*.json ./web/build/data/
           mv -f web/build/* ./publish/
 
       - name: Deploy
