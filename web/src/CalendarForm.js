@@ -1,26 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import styled from "styled-components";
 import ReactDataGrid from 'react-data-grid';
-import { Editors } from "react-data-grid-addons";
+import { Editors, Menu } from "react-data-grid-addons";
+import DataContextMenu, { deleteRow, insertRow } from './DataContextMenu';
+import styled from "styled-components";
+
+const { DropDownEditor } = Editors;
+const { ContextMenuTrigger } = Menu;
 
 const Form = styled.form`
   justify-content: center;
   width: 80%;
 `
 
+const defaultColumnProperties = {
+  editable: true,
+};
+
 const subjectsColumns = [
-  { key: 'class_id', name: 'Subject ID', editable: true },
-  { key: 'class_name', name: 'Subject Name', editable: true },
-  { key: 'class_desc', name: 'Subject Description', editable: true },
-];
+  { key: 'class_id', name: 'Subject ID' },
+  { key: 'class_name', name: 'Subject Name' },
+  { key: 'class_desc', name: 'Subject Description' },
+].map(c => ({ ...c, ...defaultColumnProperties }));
 
 const subjectsRows = [
   { class_id: 'ia', class_name: 'Inteligencia Artificial', class_desc: 'algo' },
   { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
 ]
 
-const { DropDownEditor } = Editors;
 const BoolEditor = <DropDownEditor options={[
   { id: "true", value: "True" },
   { id: "false", value: "False" },
@@ -28,12 +35,12 @@ const BoolEditor = <DropDownEditor options={[
 
 // weekday;class_id;start_hour;end_hour;is_practical
 const schedulesColumns = [
-  { key: 'weekday', name: 'Weekday', editable: true },
-  { key: 'class_id', name: 'Subject ID', editable: true },
-  { key: 'start_hour', name: 'Start Hour', editable: true },
-  { key: 'end_hour', name: 'End Hour', editable: true },
-  { key: 'is_practical', name: 'Is practical', editable: true, editor: BoolEditor },
-];
+  { key: 'weekday', name: 'Weekday' },
+  { key: 'class_id', name: 'Subject ID' },
+  { key: 'start_hour', name: 'Start Hour' },
+  { key: 'end_hour', name: 'End Hour' },
+  { key: 'is_practical', name: 'Is practical', editor: BoolEditor },
+].map(c => ({ ...c, ...defaultColumnProperties }));
 
 const schedulesRows = [
   {
@@ -84,14 +91,12 @@ export default function CalendarForm() {
     // Cast semester to integer so Golang can use it.
     data.semester = parseInt(data.semester);
 
-    console.log(data.semester == 1 ? calendarData1 : calendarData2)
-
     console.log(window.calendar(
       data.semester,
       subjectsData,
       schedulesData,
       data.exportType,
-      (data.semester == 1 ? calendarData1 : calendarData2),
+      (data.semester === 1 ? calendarData1 : calendarData2),
     ));
   }
 
@@ -115,7 +120,7 @@ export default function CalendarForm() {
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
       <div className="col-12">
-        <label for="subjects" className="form-label">Subjects</label>
+        <label htmlFor="subjects" className="form-label">Subjects</label>
         <ReactDataGrid
           name="subjects"
           columns={subjectsColumns}
@@ -123,11 +128,21 @@ export default function CalendarForm() {
           rowsCount={subjects.length}
           onGridRowsUpdated={onSubjectsUpdated}
           enableCellSelect={true}
-          minHeight={150} />
+          minHeight={150}
+          contextMenu={
+            <DataContextMenu
+              id="subjectsContextMenu"
+              onRowDelete={(e, { rowIdx }) => setSubjects(deleteRow(rowIdx))}
+              onRowInsertAbove={(e, { rowIdx }) => setSubjects(insertRow(rowIdx))}
+              onRowInsertBelow={(e, { rowIdx }) => setSubjects(insertRow(rowIdx + 1))}
+            />
+          }
+          RowsContainer={ContextMenuTrigger}
+        />
       </div>
 
       <div className="col-12">
-        <label for="subjects" className="form-label">Schedules</label>
+        <label htmlFor="subjects" className="form-label">Schedules</label>
         <ReactDataGrid
           name="schedules"
           columns={schedulesColumns}
@@ -135,11 +150,21 @@ export default function CalendarForm() {
           rowsCount={schedules.length}
           onGridRowsUpdated={onSchedulesUpdated}
           enableCellSelect={true}
-          minHeight={150} />
+          minHeight={150}
+          contextMenu={
+            <DataContextMenu
+              id="schedulesContextMenu"
+              onRowDelete={(e, { rowIdx }) => setSchedules(deleteRow(rowIdx, schedules))}
+              onRowInsertAbove={(e, { rowIdx }) => setSchedules(insertRow(rowIdx, schedules))}
+              onRowInsertBelow={(e, { rowIdx }) => setSchedules(insertRow(rowIdx + 1, schedules))}
+            />
+          }
+          RowsContainer={ContextMenuTrigger}
+        />
       </div>
 
       <div className="col-md-6">
-        <label for="semester" className="form-label">Semester</label>
+        <label htmlFor="semester" className="form-label">Semester</label>
         <select type="number" name="semester" className="form-select" ref={register}>
           <option value={1}>First semester</option>
           <option value={2}>Second semester</option>
@@ -147,15 +172,17 @@ export default function CalendarForm() {
       </div>
 
       <div className="col-md-6">
-        <label for="exportType" className="form-label">Export Type</label>
+        <label htmlFor="exportType" className="form-label">Export Type</label>
         <select name="exportType" className="form-select" ref={register}>
           <option value="gcal">Google Calendar</option>
           <option value="org">Org Mode</option>
         </select>
       </div>
 
-      <input type="submit" className="w-100 btn btn-primary btn-lg" />
+      <div className="col-md-4">
+        <input type="submit" className="w-100 btn btn-primary btn-lg" />
+      </div>
       <p>{errors.exampleRequired && <span>Some fields are required</span>}</p>
-    </Form >
+    </Form>
   );
 }
