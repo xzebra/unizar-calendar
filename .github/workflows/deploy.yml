@@ -45,11 +45,24 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
 
+      - name: Set up React build
+        uses: actions/setup-node@v1
+        with:
+          node-version: 15.x
+
+      - name: Install React project dependencies
+        run: npm install
+        working-directory: web
+
+      - name: Build static React site
+        run: npm run build
+        working-directory: web
+
       - name: Setup deployment
         run: |
           mkdir -p ./publish
           mv -f semester*.json ./web/public/data/
-          mv -f web/* ./publish/
+          mv -f web/build/* ./publish/
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
