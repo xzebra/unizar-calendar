@@ -45,7 +45,7 @@ jobs:
           pwd
           ls -la
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
+          GOOGLE_APPLICATION_CREDENTIALS: ../../../service_account.json
         working-directory: web/public/data
 
       - name: Set up React build
