@@ -22,9 +22,7 @@ func NewData(semester *Semester, parsed *schedules.ParsedSemesterFiles, number i
 		Schedule: parsed.Schedule,
 		Classes:  parsed.Names,
 	}
-	s.mergeClassesDays()
-
-	return s, nil
+	return s, s.mergeClassesDays()
 }
 
 func isWildcardDay(dayType string) bool {
@@ -60,7 +58,7 @@ func (s *Data) getSchedGivenDayType(dayType string) (sched []*schedules.Schedule
 	return
 }
 
-func (s *Data) mergeClassesDays() {
+func (s *Data) mergeClassesDays() error {
 	s.Merged = make(map[string][]timeRange)
 
 	// For each type of day
@@ -69,6 +67,11 @@ func (s *Data) mergeClassesDays() {
 
 		// For each class on that day type
 		for _, class := range sched {
+			// Check if class id exists
+			if _, exists := s.Classes[class.ID]; !exists {
+				return fmt.Errorf("used non existing class id `%s`", class.ID)
+			}
+
 			// Add times associated to class
 			s.Merged[class.ID] = append(s.Merged[class.ID], timeRange{
 				Start: class.Start.AddTo(day),
@@ -76,4 +79,6 @@ func (s *Data) mergeClassesDays() {
 			})
 		}
 	}
+
+	return nil
 }

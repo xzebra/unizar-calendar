@@ -103,9 +103,13 @@ export default function CalendarForm() {
       (data.semester === 1 ? calendarData1 : calendarData2),
     );
 
+    if (res instanceof Error) {
+      console.log(res);
+      return;
+    }
+
     console.log(res);
     setResult(res);
-
 
     let blob = new Blob([res], {
       type: 'text/plain'
