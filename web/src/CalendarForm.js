@@ -5,7 +5,7 @@ import { Editors, Menu } from "react-data-grid-addons";
 import DataContextMenu, { deleteRow, insertRow } from './DataContextMenu';
 import styled from "styled-components";
 import "react-popupbox/dist/react-popupbox.css"
-import renderPopup from './ResultServe'
+import renderErrorPopup from './ErrorPopup'
 import fileDownload from 'js-file-download';
 
 const { DropDownEditor } = Editors;
@@ -103,9 +103,13 @@ export default function CalendarForm() {
       (data.semester === 1 ? calendarData1 : calendarData2),
     );
 
+    if (res instanceof Error) {
+      renderErrorPopup(res);
+      return;
+    }
+
     console.log(res);
     setResult(res);
-
 
     let blob = new Blob([res], {
       type: 'text/plain'

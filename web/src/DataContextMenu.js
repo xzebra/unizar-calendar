@@ -29,7 +29,12 @@ export default function DataContextMenu({
 
 export const deleteRow = rowIdx => rows => {
     const nextRows = [...rows];
-    nextRows.splice(rowIdx, 1);
+    if (nextRows.length === 1) {
+        const newRow = {};
+        nextRows.splice(rowIdx, 1, newRow);
+    } else {
+        nextRows.splice(rowIdx, 1);
+    }
     return nextRows;
 };
 

@@ -36,9 +36,6 @@ jobs:
       - name: Generate calendar data
         run: |
           ./bin/webdata semester1.json semester2.json
-          # need to remove .gitignore as actions-gh-pages wont deploy
-          # ignored files
-          rm ./web/public/data/.gitignore
           mv -f semester*.json ./web/public/data/
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
@@ -68,8 +65,11 @@ jobs:
           mv -f web/build/* ./publish/
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v3.7.0-8
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./publish
+          # need to exclude .gitignore as actions-gh-pages wont deploy
+          # ignored files
+          exclude_assets: '.github,**/.gitignore'
           force_orphan: true

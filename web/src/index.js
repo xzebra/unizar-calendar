@@ -16,9 +16,10 @@ class App extends Component {
   async componentDidMount() {
     // Run golang instance
     const go = new window.Go();
-    const source = await fetch("calendar.wasm");
+    const source = await fetch(process.env.PUBLIC_URL + "/calendar.wasm");
+    const buffer = await source.arrayBuffer();
 
-    let { instance } = await WebAssembly.instantiateStreaming(source, go.importObject)
+    let { instance } = await WebAssembly.instantiate(buffer, go.importObject)
     await go.run(instance)
   }
 
