@@ -5,7 +5,7 @@ import { Editors, Menu } from "react-data-grid-addons";
 import DataContextMenu, { deleteRow, insertRow } from './DataContextMenu';
 import styled from "styled-components";
 import "react-popupbox/dist/react-popupbox.css"
-import renderPopup from './ResultServe'
+import renderErrorPopup from './ErrorPopup'
 import fileDownload from 'js-file-download';
 
 const { DropDownEditor } = Editors;
@@ -104,7 +104,7 @@ export default function CalendarForm() {
     );
 
     if (res instanceof Error) {
-      console.log(res);
+      renderErrorPopup(res);
       return;
     }
 

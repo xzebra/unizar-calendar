@@ -95,3 +95,11 @@ code {
   position: absolute;
   right: 7px;
 }
+
+.popupbox-wrapper {
+  border-radius: 10px;
+}
+
+.popup-title {
+  font-weight: bold;
+}

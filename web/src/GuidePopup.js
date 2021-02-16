@@ -1,14 +1,15 @@
 import React from "react";
 import fileDownload from 'js-file-download';
 import { PopupboxManager } from "react-popupbox";
+import Popup from './Popup'
 
-function ResultServe({ result, guide }) {
+function GuidePopup({ result, guide }) {
     let blob = new Blob([result], {
         type: 'text/plain'
     });
 
     return (
-        <div className="row g-2">
+        <Popup title="How to export">
             <div className="col-12">
                 {guide.split("\n").map((i, key) => {
                     return <p key={key}>{i}</p>;
@@ -17,22 +18,18 @@ function ResultServe({ result, guide }) {
             <div className="col-12">
                 <button onClick={() => fileDownload(blob, "test.csv")}>Download</button>
             </div>
-        </div>
+        </Popup>
     );
 };
 
-export default function renderPopup(res, exportType) {
+export default function renderGuidePopup(res, exportType) {
     const content = <ResultServe
         result={res}
-        guide="Idk man"
+        guide="lorem ipsum"
     />;
     PopupboxManager.open({
         content,
         config: {
-            titleBar: {
-                enable: true,
-                text: 'How to export'
-            },
             fadeIn: true,
             fadeInSpeed: 400
         }
