@@ -31,12 +31,6 @@ const subjectsRows = [
   { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
 ]
 
-export const defaultEmptyRow = {
-  class_id: '',
-  class_name: '',
-  class_desc: ''
-};
-
 const BoolEditor = <DropDownEditor options={[
   { id: "true", value: "True" },
   { id: "false", value: "False" },
@@ -145,6 +139,16 @@ export default function CalendarForm() {
     setSchedules(r);
   };
 
+  const defaultSubjectsRow = { class_id: '', class_name: '', class_desc: '' };
+
+  const defaultSchedulesRow = {
+    weekday: 'Lx',
+    class_id: '',
+    start_hour: '',
+    end_hour: '',
+    is_practical: "False",
+  };
+
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
@@ -161,9 +165,9 @@ export default function CalendarForm() {
           contextMenu={
             <DataContextMenu
               id="subjectsContextMenu"
-              onRowDelete={(e, { rowIdx }) => setSubjects(deleteRow(rowIdx))}
-              onRowInsertAbove={(e, { rowIdx }) => setSubjects(insertRow(rowIdx))}
-              onRowInsertBelow={(e, { rowIdx }) => setSubjects(insertRow(rowIdx + 1))}
+              onRowDelete={(e, { rowIdx }) => setSubjects(deleteRow(rowIdx, defaultSubjectsRow))}
+              onRowInsertAbove={(e, { rowIdx }) => setSubjects(insertRow(rowIdx, defaultSubjectsRow))}
+              onRowInsertBelow={(e, { rowIdx }) => setSubjects(insertRow(rowIdx + 1, defaultSubjectsRow))}
             />
           }
           RowsContainer={ContextMenuTrigger}
@@ -183,9 +187,9 @@ export default function CalendarForm() {
           contextMenu={
             <DataContextMenu
               id="schedulesContextMenu"
-              onRowDelete={(e, { rowIdx }) => setSchedules(deleteRow(rowIdx, schedules))}
-              onRowInsertAbove={(e, { rowIdx }) => setSchedules(insertRow(rowIdx, schedules))}
-              onRowInsertBelow={(e, { rowIdx }) => setSchedules(insertRow(rowIdx + 1, schedules))}
+              onRowDelete={(e, { rowIdx }) => setSchedules(deleteRow(rowIdx, defaultSchedulesRow))}
+              onRowInsertAbove={(e, { rowIdx }) => setSchedules(insertRow(rowIdx, defaultSchedulesRow))}
+              onRowInsertBelow={(e, { rowIdx }) => setSchedules(insertRow(rowIdx + 1, defaultSchedulesRow))}
             />
           }
           RowsContainer={ContextMenuTrigger}
