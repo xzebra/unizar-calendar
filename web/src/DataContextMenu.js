@@ -1,4 +1,5 @@
 import React from "react";
+import { defaultEmptyRow } from './CalendarForm';
 import { Menu } from "react-data-grid-addons";
 const { ContextMenu, MenuItem, SubMenu } = Menu;
 
@@ -30,7 +31,7 @@ export default function DataContextMenu({
 export const deleteRow = rowIdx => rows => {
     const nextRows = [...rows];
     if (nextRows.length === 1) {
-        const newRow = {};
+        const newRow = defaultEmptyRow;
         nextRows.splice(rowIdx, 1, newRow);
     } else {
         nextRows.splice(rowIdx, 1);
@@ -39,7 +40,7 @@ export const deleteRow = rowIdx => rows => {
 };
 
 export const insertRow = rowIdx => rows => {
-    const newRow = {};
+    const newRow = defaultEmptyRow;
     const nextRows = [...rows];
     nextRows.splice(rowIdx, 0, newRow);
     return nextRows;
