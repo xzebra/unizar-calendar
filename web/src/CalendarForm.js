@@ -31,6 +31,12 @@ const subjectsRows = [
   { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
 ]
 
+export const defaultEmptyRow = {
+  class_id: '',
+  class_name: '',
+  class_desc: ''
+};
+
 const BoolEditor = <DropDownEditor options={[
   { id: "true", value: "True" },
   { id: "false", value: "False" },
