@@ -17,10 +17,6 @@ code {
     monospace;
 }
 
-.react-grid-Canvas {
-  overflow: hidden scroll !important;
-}
-
 .react-contextmenu {
   min-width: 160px;
   padding: 5px 0;
