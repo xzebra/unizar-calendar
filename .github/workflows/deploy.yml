@@ -41,7 +41,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ./service_account.json
 
       - name: Compile WebAssembly wrapper
-        run: go build -o web/calendar.wasm ./cmd/wasm/main.go
+        run: go build -o ./web/public/calendar.wasm ./cmd/wasm/main.go
         env:
           GOOS: js
           GOARCH: wasm
