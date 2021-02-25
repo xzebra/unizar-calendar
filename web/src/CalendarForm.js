@@ -8,6 +8,8 @@ import "react-popupbox/dist/react-popupbox.css"
 import renderErrorPopup from './ErrorPopup'
 import fileDownload from 'js-file-download';
 
+import HourEditor from './HourEditor'
+
 const { DropDownEditor } = Editors;
 const { ContextMenuTrigger } = Menu;
 
@@ -40,8 +42,8 @@ const BoolEditor = <DropDownEditor options={[
 const schedulesColumns = [
   { key: 'weekday', name: 'Weekday' },
   { key: 'class_id', name: 'Subject ID' },
-  { key: 'start_hour', name: 'Start Hour' },
-  { key: 'end_hour', name: 'End Hour' },
+  { key: 'start_hour', name: 'Start Hour', editor: <HourEditor label="start_hour" /> },
+  { key: 'end_hour', name: 'End Hour', editor: <HourEditor label="end_hour" /> },
   { key: 'is_practical', name: 'Is practical', editor: BoolEditor },
 ].map(c => ({ ...c, ...defaultColumnProperties }));
 
@@ -144,8 +146,8 @@ export default function CalendarForm() {
   const defaultSchedulesRow = {
     weekday: 'Lx',
     class_id: '',
-    start_hour: '',
-    end_hour: '',
+    start_hour: '00:00',
+    end_hour: '00:00',
     is_practical: "False",
   };
 
