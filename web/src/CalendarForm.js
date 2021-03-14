@@ -8,6 +8,14 @@ import "react-popupbox/dist/react-popupbox.css"
 import renderErrorPopup from './ErrorPopup'
 import fileDownload from 'js-file-download';
 
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Button from 'react-bootstrap/Button';
+import Image from 'react-bootstrap/Image';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+
 const { DropDownEditor } = Editors;
 const { ContextMenuTrigger } = Menu;
 
@@ -30,6 +38,8 @@ const subjectsRows = [
   { class_id: 'ia', class_name: 'Inteligencia Artificial', class_desc: 'algo' },
   { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
 ]
+
+const subjectsTooltip = "Test";
 
 export const defaultEmptyRow = {
   class_id: '',
@@ -150,6 +160,17 @@ export default function CalendarForm() {
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
       <div className="col-12">
         <label htmlFor="subjects" className="form-label">Subjects</label>
+        <OverlayTrigger
+          placement="bottom"
+          overlay={<Tooltip id="button-tooltip-2">Check out this avatar</Tooltip>}
+          trigger="click"
+        >
+          {({ ref, ...triggerHandler }) => (
+            <FontAwesomeIcon icon={faCoffee}
+              {...triggerHandler}
+            />
+          )}
+        </OverlayTrigger>
         <ReactDataGrid
           name="subjects"
           columns={subjectsColumns}
