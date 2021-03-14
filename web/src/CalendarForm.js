@@ -7,6 +7,7 @@ import styled from "styled-components";
 import "react-popupbox/dist/react-popupbox.css"
 import renderErrorPopup from './ErrorPopup'
 import fileDownload from 'js-file-download';
+import HourEditor from './HourEditor'
 
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -41,12 +42,6 @@ const subjectsRows = [
 
 const subjectsTooltip = "Test";
 
-export const defaultEmptyRow = {
-  class_id: '',
-  class_name: '',
-  class_desc: ''
-};
-
 const BoolEditor = <DropDownEditor options={[
   { id: "true", value: "True" },
   { id: "false", value: "False" },
@@ -56,8 +51,8 @@ const BoolEditor = <DropDownEditor options={[
 const schedulesColumns = [
   { key: 'weekday', name: 'Weekday' },
   { key: 'class_id', name: 'Subject ID' },
-  { key: 'start_hour', name: 'Start Hour' },
-  { key: 'end_hour', name: 'End Hour' },
+  { key: 'start_hour', name: 'Start Hour', editor: <HourEditor label="start_hour" /> },
+  { key: 'end_hour', name: 'End Hour', editor: <HourEditor label="end_hour" /> },
   { key: 'is_practical', name: 'Is practical', editor: BoolEditor },
 ].map(c => ({ ...c, ...defaultColumnProperties }));
 
@@ -155,6 +150,16 @@ export default function CalendarForm() {
     setSchedules(r);
   };
 
+  const defaultSubjectsRow = { class_id: '', class_name: '', class_desc: '' };
+
+  const defaultSchedulesRow = {
+    weekday: 'Lx',
+    class_id: '',
+    start_hour: '00:00',
+    end_hour: '00:00',
+    is_practical: "False",
+  };
+
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
@@ -182,9 +187,9 @@ export default function CalendarForm() {
           contextMenu={
             <DataContextMenu
               id="subjectsContextMenu"
-              onRowDelete={(e, { rowIdx }) => setSubjects(deleteRow(rowIdx))}
-              onRowInsertAbove={(e, { rowIdx }) => setSubjects(insertRow(rowIdx))}
-              onRowInsertBelow={(e, { rowIdx }) => setSubjects(insertRow(rowIdx + 1))}
+              onRowDelete={(e, { rowIdx }) => setSubjects(deleteRow(rowIdx, defaultSubjectsRow))}
+              onRowInsertAbove={(e, { rowIdx }) => setSubjects(insertRow(rowIdx, defaultSubjectsRow))}
+              onRowInsertBelow={(e, { rowIdx }) => setSubjects(insertRow(rowIdx + 1, defaultSubjectsRow))}
             />
           }
           RowsContainer={ContextMenuTrigger}
@@ -204,9 +209,9 @@ export default function CalendarForm() {
           contextMenu={
             <DataContextMenu
               id="schedulesContextMenu"
-              onRowDelete={(e, { rowIdx }) => setSchedules(deleteRow(rowIdx, schedules))}
-              onRowInsertAbove={(e, { rowIdx }) => setSchedules(insertRow(rowIdx, schedules))}
-              onRowInsertBelow={(e, { rowIdx }) => setSchedules(insertRow(rowIdx + 1, schedules))}
+              onRowDelete={(e, { rowIdx }) => setSchedules(deleteRow(rowIdx, defaultSchedulesRow))}
+              onRowInsertAbove={(e, { rowIdx }) => setSchedules(insertRow(rowIdx, defaultSchedulesRow))}
+              onRowInsertBelow={(e, { rowIdx }) => setSchedules(insertRow(rowIdx + 1, defaultSchedulesRow))}
             />
           }
           RowsContainer={ContextMenuTrigger}
