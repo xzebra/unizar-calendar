@@ -119,6 +119,7 @@ export default function CalendarForm() {
   }, []);
 
   const onSubmit = data => {
+    console.log(subjects);
     console.log(schedules);
 
     const subjectsData = tableToCSV(subjectsColumns, subjects);
@@ -183,55 +184,23 @@ export default function CalendarForm() {
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
-      <div className="col-12">
-        <label htmlFor="subjects" className="form-label">Subjects</label>
-        <OverlayTrigger
-          placement="auto"
-          overlay={<Tooltip id="button-tooltip-2">Check out this avatar</Tooltip>}
-        >
-          <FontAwesomeIcon className="ms-1" icon={faQuestionCircle} />
-        </OverlayTrigger>
-        <ReactDataGrid
-          name="subjects"
-          columns={subjectsColumns}
-          rowGetter={i => subjects[i]}
-          rowsCount={subjects.length}
-          onGridRowsUpdated={onSubjectsUpdated}
-          enableCellSelect={true}
-          minHeight={150}
-          contextMenu={
-            <DataContextMenu
-              id="subjectsContextMenu"
-              onRowDelete={(e, { rowIdx }) => setSubjects(deleteRow(rowIdx, defaultSubjectsRow))}
-              onRowInsertAbove={(e, { rowIdx }) => setSubjects(insertRow(rowIdx, defaultSubjectsRow))}
-              onRowInsertBelow={(e, { rowIdx }) => setSubjects(insertRow(rowIdx + 1, defaultSubjectsRow))}
-            />
-          }
-          RowsContainer={ContextMenuTrigger}
-        />
-      </div>
+      <InputTable
+        title="Subjects"
+        tooltip=""
+        startingRows={subjectsRows}
+        defaultRow={defaultSubjectsRow}
+        cols={subjectsColumns}
+        onChange={setSubjects}
+      />
 
-      <div className="col-12">
-        <label htmlFor="subjects" className="form-label">Schedules</label>
-        <ReactDataGrid
-          name="schedules"
-          columns={schedulesColumns}
-          rowGetter={i => schedules[i]}
-          rowsCount={schedules.length}
-          onGridRowsUpdated={onSchedulesUpdated}
-          enableCellSelect={true}
-          minHeight={150}
-          contextMenu={
-            <DataContextMenu
-              id="schedulesContextMenu"
-              onRowDelete={(e, { rowIdx }) => setSchedules(deleteRow(rowIdx, defaultSchedulesRow))}
-              onRowInsertAbove={(e, { rowIdx }) => setSchedules(insertRow(rowIdx, defaultSchedulesRow))}
-              onRowInsertBelow={(e, { rowIdx }) => setSchedules(insertRow(rowIdx + 1, defaultSchedulesRow))}
-            />
-          }
-          RowsContainer={ContextMenuTrigger}
-        />
-      </div>
+      <InputTable
+        title="Schedules"
+        tooltip=""
+        startingRows={schedulesRows}
+        defaultRow={defaultSchedulesRow}
+        cols={schedulesColumns}
+        onChange={setSchedules}
+      />
 
       <div className="col-md-6">
         <label htmlFor="semester" className="form-label">Semester</label>
