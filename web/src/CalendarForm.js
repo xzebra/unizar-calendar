@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
+
 import { useForm } from "react-hook-form";
+import { isMobile } from "react-device-detect";
+
 import ReactDataGrid from 'react-data-grid';
 import { Editors, Menu } from "react-data-grid-addons";
 import DataContextMenu, { deleteRow, insertRow } from './DataContextMenu';
+
 import styled from "styled-components";
+
 import "react-popupbox/dist/react-popupbox.css"
 import renderErrorPopup from './ErrorPopup'
+
 import fileDownload from 'js-file-download';
+
 import HourEditor from './HourEditor';
 import InputTable from './InputTable';
 
@@ -47,7 +54,7 @@ const subjectsColumns = [
   {
     key: 'class_id',
     name: 'Subject ID',
-    tooltip: 'Subject ID is a shortname of the subject to make it easier to be referenced',
+    tooltip: 'Subject ID is a shortname of the subject to make it easier to be referenced in Schedules table',
     headerRenderer: columnTooltipRenderer
   },
   { key: 'class_name', name: 'Subject Name' },
@@ -59,7 +66,9 @@ const subjectsRows = [
   { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
 ]
 
-const subjectsTooltip = "Test";
+const tableTooltip = (isMobile ?
+  "Double tap on a cell to edit the content. Hold tap on a row to delete it or insert another one." :
+  "Double click on a cell to edit the content. Right click on a row to delete it or insert another one.");
 
 const BoolEditor = <DropDownEditor options={[
   { id: "true", value: "True" },
@@ -69,10 +78,21 @@ const BoolEditor = <DropDownEditor options={[
 // weekday;class_id;start_hour;end_hour;is_practical
 const schedulesColumns = [
   { key: 'weekday', name: 'Weekday' },
-  { key: 'class_id', name: 'Subject ID' },
+  {
+    key: 'class_id',
+    name: 'Subject ID',
+    tooltip: 'ID specified in Subjects table',
+    headerRenderer: columnTooltipRenderer
+  },
   { key: 'start_hour', name: 'Start Hour', editor: <HourEditor label="start_hour" /> },
   { key: 'end_hour', name: 'End Hour', editor: <HourEditor label="end_hour" /> },
-  { key: 'is_practical', name: 'Is practical', editor: BoolEditor },
+  {
+    key: 'is_practical',
+    name: 'Is practical',
+    editor: BoolEditor,
+    tooltip: 'Some weeks have classes but not practical ones',
+    headerRenderer: columnTooltipRenderer
+  },
 ].map(c => ({ ...c, ...defaultColumnProperties }));
 
 const schedulesRows = [
@@ -119,9 +139,6 @@ export default function CalendarForm() {
   }, []);
 
   const onSubmit = data => {
-    console.log(subjects);
-    console.log(schedules);
-
     const subjectsData = tableToCSV(subjectsColumns, subjects);
     const schedulesData = tableToCSV(schedulesColumns, schedules);
 
@@ -186,7 +203,7 @@ export default function CalendarForm() {
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
       <InputTable
         title="Subjects"
-        tooltip=""
+        tooltip={tableTooltip}
         startingRows={subjectsRows}
         defaultRow={defaultSubjectsRow}
         cols={subjectsColumns}
@@ -195,7 +212,7 @@ export default function CalendarForm() {
 
       <InputTable
         title="Schedules"
-        tooltip=""
+        tooltip={tableTooltip}
         startingRows={schedulesRows}
         defaultRow={defaultSchedulesRow}
         cols={schedulesColumns}
