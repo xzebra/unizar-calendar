@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { isMobile } from "react-device-detect";
+import { useTranslation } from "react-i18next";
 
 import ReactDataGrid from 'react-data-grid';
 import { Editors, Menu } from "react-data-grid-addons";
@@ -50,50 +51,10 @@ const columnTooltipRenderer = (value) => {
   );
 }
 
-const subjectsColumns = [
-  {
-    key: 'class_id',
-    name: 'Subject ID',
-    tooltip: 'Subject ID is a shortname of the subject to make it easier to be referenced in Schedules table',
-    headerRenderer: columnTooltipRenderer
-  },
-  { key: 'class_name', name: 'Subject Name' },
-  { key: 'class_desc', name: 'Subject Description' },
-].map(c => ({ ...c, ...defaultColumnProperties }));
-
-const subjectsRows = [
-  { class_id: 'ia', class_name: 'Inteligencia Artificial', class_desc: 'algo' },
-  { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
-]
-
-const tableTooltip = (isMobile ?
-  "Double tap on a cell to edit the content. Hold tap on a row to delete it or insert another one." :
-  "Double click on a cell to edit the content. Right click on a row to delete it or insert another one.");
-
 const BoolEditor = <DropDownEditor options={[
   { id: "true", value: "True" },
   { id: "false", value: "False" },
 ]} />
-
-// weekday;class_id;start_hour;end_hour;is_practical
-const schedulesColumns = [
-  { key: 'weekday', name: 'Weekday' },
-  {
-    key: 'class_id',
-    name: 'Subject ID',
-    tooltip: 'ID specified in Subjects table',
-    headerRenderer: columnTooltipRenderer
-  },
-  { key: 'start_hour', name: 'Start Hour', editor: <HourEditor label="start_hour" /> },
-  { key: 'end_hour', name: 'End Hour', editor: <HourEditor label="end_hour" /> },
-  {
-    key: 'is_practical',
-    name: 'Is practical',
-    editor: BoolEditor,
-    tooltip: 'Some weeks have classes but not practical ones',
-    headerRenderer: columnTooltipRenderer
-  },
-].map(c => ({ ...c, ...defaultColumnProperties }));
 
 const schedulesRows = [
   {
@@ -122,6 +83,46 @@ function tableToCSV(columnData, tableData) {
 }
 
 export default function CalendarForm() {
+  const subjectsColumns = [
+    {
+      key: 'class_id',
+      name: 'Subject ID',
+      tooltip: 'Subject ID is a shortname of the subject to make it easier to be referenced in Schedules table',
+      headerRenderer: columnTooltipRenderer
+    },
+    { key: 'class_name', name: 'Subject Name' },
+    { key: 'class_desc', name: 'Subject Description' },
+  ].map(c => ({ ...c, ...defaultColumnProperties }));
+
+  const subjectsRows = [
+    { class_id: 'ia', class_name: 'Inteligencia Artificial', class_desc: 'algo' },
+    { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
+  ]
+
+  const tableTooltip = (isMobile ?
+    "Double tap on a cell to edit the content. Hold tap on a row to delete it or insert another one." :
+    "Double click on a cell to edit the content. Right click on a row to delete it or insert another one.");
+
+  // weekday;class_id;start_hour;end_hour;is_practical
+  const schedulesColumns = [
+    { key: 'weekday', name: 'Weekday' },
+    {
+      key: 'class_id',
+      name: 'Subject ID',
+      tooltip: 'ID specified in Subjects table',
+      headerRenderer: columnTooltipRenderer
+    },
+    { key: 'start_hour', name: 'Start Hour', editor: <HourEditor label="start_hour" /> },
+    { key: 'end_hour', name: 'End Hour', editor: <HourEditor label="end_hour" /> },
+    {
+      key: 'is_practical',
+      name: 'Is practical',
+      editor: BoolEditor,
+      tooltip: 'Some weeks have classes but not practical ones',
+      headerRenderer: columnTooltipRenderer
+    },
+  ].map(c => ({ ...c, ...defaultColumnProperties }));
+
   const { register, handleSubmit } = useForm();
   const [subjects, setSubjects] = useState(subjectsRows);
   const [schedules, setSchedules] = useState(schedulesRows);
