@@ -1,0 +1,11 @@
+{
+    "tables": {
+        "subjects": {
+            "subject_id": "Subject ID"
+        },
+        "bool_editor": {
+            "true": "True",
+            "false": "False"
+        }
+    }
+}

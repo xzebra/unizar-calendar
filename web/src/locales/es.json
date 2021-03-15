@@ -1,0 +1,7 @@
+{
+    "tables": {
+        "subjects": {
+            "subject_id": "ID de Asignatura"
+        }
+    }
+}
