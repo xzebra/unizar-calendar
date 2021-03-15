@@ -7,15 +7,14 @@ import styled from "styled-components";
 import "react-popupbox/dist/react-popupbox.css"
 import renderErrorPopup from './ErrorPopup'
 import fileDownload from 'js-file-download';
-import HourEditor from './HourEditor'
+import HourEditor from './HourEditor';
+import InputTable from './InputTable';
 
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Button from 'react-bootstrap/Button';
-import Image from 'react-bootstrap/Image';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
 
 const { DropDownEditor } = Editors;
 const { ContextMenuTrigger } = Menu;
@@ -29,8 +28,28 @@ const defaultColumnProperties = {
   editable: true,
 };
 
+const columnTooltipRenderer = (value) => {
+  return (
+    <span>
+      {value.column.name}
+
+      <OverlayTrigger
+        placement="auto"
+        overlay={<Tooltip>{value.column.tooltip}</Tooltip>}
+      >
+        <FontAwesomeIcon className="ms-1" icon={faQuestionCircle} />
+      </OverlayTrigger>
+    </span>
+  );
+}
+
 const subjectsColumns = [
-  { key: 'class_id', name: 'Subject ID' },
+  {
+    key: 'class_id',
+    name: 'Subject ID',
+    tooltip: 'Subject ID is a shortname of the subject to make it easier to be referenced',
+    headerRenderer: columnTooltipRenderer
+  },
   { key: 'class_name', name: 'Subject Name' },
   { key: 'class_desc', name: 'Subject Description' },
 ].map(c => ({ ...c, ...defaultColumnProperties }));
@@ -100,6 +119,8 @@ export default function CalendarForm() {
   }, []);
 
   const onSubmit = data => {
+    console.log(schedules);
+
     const subjectsData = tableToCSV(subjectsColumns, subjects);
     const schedulesData = tableToCSV(schedulesColumns, schedules);
 
@@ -119,7 +140,6 @@ export default function CalendarForm() {
       return;
     }
 
-    console.log(res);
     setResult(res);
 
     let blob = new Blob([res], {
@@ -166,15 +186,10 @@ export default function CalendarForm() {
       <div className="col-12">
         <label htmlFor="subjects" className="form-label">Subjects</label>
         <OverlayTrigger
-          placement="bottom"
+          placement="auto"
           overlay={<Tooltip id="button-tooltip-2">Check out this avatar</Tooltip>}
-          trigger="click"
         >
-          {({ ref, ...triggerHandler }) => (
-            <FontAwesomeIcon icon={faCoffee}
-              {...triggerHandler}
-            />
-          )}
+          <FontAwesomeIcon className="ms-1" icon={faQuestionCircle} />
         </OverlayTrigger>
         <ReactDataGrid
           name="subjects"
