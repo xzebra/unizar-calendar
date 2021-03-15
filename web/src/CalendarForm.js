@@ -1,14 +1,27 @@
 import React, { useEffect, useState } from "react";
+
 import { useForm } from "react-hook-form";
+import { isMobile } from "react-device-detect";
+
 import ReactDataGrid from 'react-data-grid';
 import { Editors, Menu } from "react-data-grid-addons";
 import DataContextMenu, { deleteRow, insertRow } from './DataContextMenu';
+
 import styled from "styled-components";
+
 import "react-popupbox/dist/react-popupbox.css"
 import renderErrorPopup from './ErrorPopup'
+
 import fileDownload from 'js-file-download';
 
-import HourEditor from './HourEditor'
+import HourEditor from './HourEditor';
+import InputTable from './InputTable';
+
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
 
 const { DropDownEditor } = Editors;
 const { ContextMenuTrigger } = Menu;
@@ -22,8 +35,28 @@ const defaultColumnProperties = {
   editable: true,
 };
 
+const columnTooltipRenderer = (value) => {
+  return (
+    <span>
+      {value.column.name}
+
+      <OverlayTrigger
+        placement="auto"
+        overlay={<Tooltip>{value.column.tooltip}</Tooltip>}
+      >
+        <FontAwesomeIcon className="ms-1" icon={faQuestionCircle} />
+      </OverlayTrigger>
+    </span>
+  );
+}
+
 const subjectsColumns = [
-  { key: 'class_id', name: 'Subject ID' },
+  {
+    key: 'class_id',
+    name: 'Subject ID',
+    tooltip: 'Subject ID is a shortname of the subject to make it easier to be referenced in Schedules table',
+    headerRenderer: columnTooltipRenderer
+  },
   { key: 'class_name', name: 'Subject Name' },
   { key: 'class_desc', name: 'Subject Description' },
 ].map(c => ({ ...c, ...defaultColumnProperties }));
@@ -33,6 +66,10 @@ const subjectsRows = [
   { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
 ]
 
+const tableTooltip = (isMobile ?
+  "Double tap on a cell to edit the content. Hold tap on a row to delete it or insert another one." :
+  "Double click on a cell to edit the content. Right click on a row to delete it or insert another one.");
+
 const BoolEditor = <DropDownEditor options={[
   { id: "true", value: "True" },
   { id: "false", value: "False" },
@@ -41,10 +78,21 @@ const BoolEditor = <DropDownEditor options={[
 // weekday;class_id;start_hour;end_hour;is_practical
 const schedulesColumns = [
   { key: 'weekday', name: 'Weekday' },
-  { key: 'class_id', name: 'Subject ID' },
+  {
+    key: 'class_id',
+    name: 'Subject ID',
+    tooltip: 'ID specified in Subjects table',
+    headerRenderer: columnTooltipRenderer
+  },
   { key: 'start_hour', name: 'Start Hour', editor: <HourEditor label="start_hour" /> },
   { key: 'end_hour', name: 'End Hour', editor: <HourEditor label="end_hour" /> },
-  { key: 'is_practical', name: 'Is practical', editor: BoolEditor },
+  {
+    key: 'is_practical',
+    name: 'Is practical',
+    editor: BoolEditor,
+    tooltip: 'Some weeks have classes but not practical ones',
+    headerRenderer: columnTooltipRenderer
+  },
 ].map(c => ({ ...c, ...defaultColumnProperties }));
 
 const schedulesRows = [
@@ -110,7 +158,6 @@ export default function CalendarForm() {
       return;
     }
 
-    console.log(res);
     setResult(res);
 
     let blob = new Blob([res], {
@@ -154,49 +201,23 @@ export default function CalendarForm() {
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
-      <div className="col-12">
-        <label htmlFor="subjects" className="form-label">Subjects</label>
-        <ReactDataGrid
-          name="subjects"
-          columns={subjectsColumns}
-          rowGetter={i => subjects[i]}
-          rowsCount={subjects.length}
-          onGridRowsUpdated={onSubjectsUpdated}
-          enableCellSelect={true}
-          minHeight={150}
-          contextMenu={
-            <DataContextMenu
-              id="subjectsContextMenu"
-              onRowDelete={(e, { rowIdx }) => setSubjects(deleteRow(rowIdx, defaultSubjectsRow))}
-              onRowInsertAbove={(e, { rowIdx }) => setSubjects(insertRow(rowIdx, defaultSubjectsRow))}
-              onRowInsertBelow={(e, { rowIdx }) => setSubjects(insertRow(rowIdx + 1, defaultSubjectsRow))}
-            />
-          }
-          RowsContainer={ContextMenuTrigger}
-        />
-      </div>
+      <InputTable
+        title="Subjects"
+        tooltip={tableTooltip}
+        startingRows={subjectsRows}
+        defaultRow={defaultSubjectsRow}
+        cols={subjectsColumns}
+        onChange={setSubjects}
+      />
 
-      <div className="col-12">
-        <label htmlFor="subjects" className="form-label">Schedules</label>
-        <ReactDataGrid
-          name="schedules"
-          columns={schedulesColumns}
-          rowGetter={i => schedules[i]}
-          rowsCount={schedules.length}
-          onGridRowsUpdated={onSchedulesUpdated}
-          enableCellSelect={true}
-          minHeight={150}
-          contextMenu={
-            <DataContextMenu
-              id="schedulesContextMenu"
-              onRowDelete={(e, { rowIdx }) => setSchedules(deleteRow(rowIdx, defaultSchedulesRow))}
-              onRowInsertAbove={(e, { rowIdx }) => setSchedules(insertRow(rowIdx, defaultSchedulesRow))}
-              onRowInsertBelow={(e, { rowIdx }) => setSchedules(insertRow(rowIdx + 1, defaultSchedulesRow))}
-            />
-          }
-          RowsContainer={ContextMenuTrigger}
-        />
-      </div>
+      <InputTable
+        title="Schedules"
+        tooltip={tableTooltip}
+        startingRows={schedulesRows}
+        defaultRow={defaultSchedulesRow}
+        cols={schedulesColumns}
+        onChange={setSchedules}
+      />
 
       <div className="col-md-6">
         <label htmlFor="semester" className="form-label">Semester</label>
