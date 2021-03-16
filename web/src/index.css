@@ -94,8 +94,13 @@ code {
 
 .popupbox-wrapper {
   border-radius: 10px;
+  width: 40%;
 }
 
 .popup-title {
   font-weight: bold;
+}
+
+.line-break {
+  white-space: pre-wrap;
 }
