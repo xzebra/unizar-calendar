@@ -30,6 +30,7 @@ const Form = styled.form`
 
 const defaultColumnProperties = {
   editable: true,
+  resizable: true,
 };
 
 const columnTooltipRenderer = (value) => {
@@ -202,7 +203,7 @@ export default function CalendarForm() {
         tooltip={tableTooltip}
         startingRows={subjectsRows}
         defaultRow={defaultSubjectsRow}
-        cols={subjectsColumns}
+        columns={subjectsColumns}
         onChange={setSubjects}
       />
 
@@ -211,7 +212,7 @@ export default function CalendarForm() {
         tooltip={tableTooltip}
         startingRows={schedulesRows}
         defaultRow={defaultSchedulesRow}
-        cols={schedulesColumns}
+        columns={schedulesColumns}
         onChange={setSchedules}
       />
 
