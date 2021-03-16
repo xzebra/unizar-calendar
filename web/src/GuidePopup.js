@@ -1,31 +1,32 @@
 import React from "react";
-import fileDownload from 'js-file-download';
+
+import { useTranslation } from "react-i18next";
+
 import { PopupboxManager } from "react-popupbox";
+import ReactMarkdown from 'react-markdown';
 import Popup from './Popup'
 
 function GuidePopup({ result, guide }) {
-    let blob = new Blob([result], {
-        type: 'text/plain'
-    });
-
+    const { t } = useTranslation();
     return (
-        <Popup title="How to export">
+        <Popup title={t('guides.title')}>
             <div className="col-12">
-                {guide.split("\n").map((i, key) => {
-                    return <p key={key}>{i}</p>;
-                })}
-            </div>
-            <div className="col-12">
-                <button onClick={() => fileDownload(blob, "test.csv")}>Download</button>
+                <ReactMarkdown className="line-break">
+                    {t(guide)}
+                </ReactMarkdown>
             </div>
         </Popup>
     );
 };
 
 export default function renderGuidePopup(res, exportType) {
-    const content = <ResultServe
+    const guides = {
+        "gcal": 'guides.gcal',
+    }
+
+    const content = <GuidePopup
         result={res}
-        guide="lorem ipsum"
+        guide={guides[exportType]}
     />;
     PopupboxManager.open({
         content,

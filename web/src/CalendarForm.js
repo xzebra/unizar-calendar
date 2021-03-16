@@ -8,6 +8,7 @@ import styled from "styled-components";
 
 import "react-popupbox/dist/react-popupbox.css"
 import renderErrorPopup from './ErrorPopup'
+import renderGuidePopup from './GuidePopup'
 
 import fileDownload from 'js-file-download';
 
@@ -165,7 +166,9 @@ export default function CalendarForm() {
       fileDownload(blob, "calendar.org");
     }
 
-    // renderPopup(res, data.exportType);
+    if (data.exportType == "gcal") {
+      renderGuidePopup(res, data.exportType);
+    }
   }
 
   const onSubjectsUpdated = ({ fromRow, toRow, updated }) => {
@@ -194,8 +197,8 @@ export default function CalendarForm() {
     is_practical: "False",
   };
 
+  /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
   return (
-    /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
       <InputTable
         title={t('form.subjects')}
