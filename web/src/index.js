@@ -4,7 +4,7 @@ import { useTranslation, Trans, I18nextProvider } from 'react-i18next';
 import { PopupboxManager, PopupboxContainer } from "react-popupbox";
 import styled from "styled-components";
 
-import './i18nextInit';
+import i18next from './i18nextInit';
 
 import CalendarForm from './CalendarForm';
 import './index.css';
@@ -16,15 +16,7 @@ const Centered = styled.div`
   width: 100%;
 `
 
-const Loader = () => {
-  <div className="App">
-    <div>Loading...</div>
-  </div>
-}
-
 function App() {
-  const { t, i18n } = useTranslation();
-
   // Run like componentDidMount
   useEffect(() => {
     async function runGolangInstance() {
@@ -41,16 +33,24 @@ function App() {
   }, []);
 
   return (
-    <I18nextProvider i18n={i18n}>
+    <Suspense fallback={<Loader />}>
       <Centered>
         <PopupboxContainer />
         <CalendarForm />
       </Centered >
-    </I18nextProvider>
+    </Suspense>
   );
 }
 
+const Loader = () => (
+  <div className="App">
+    <div>Loading...</div>
+  </div>
+);
+
 ReactDOM.render(
-  <App />,
+  <I18nextProvider i18n={i18next}>
+    <App />
+  </I18nextProvider>,
   document.getElementById('root')
 );
