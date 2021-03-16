@@ -4,10 +4,6 @@ import { useForm } from "react-hook-form";
 import { isMobile } from "react-device-detect";
 import { useTranslation } from "react-i18next";
 
-import ReactDataGrid from 'react-data-grid';
-import { Editors, Menu } from "react-data-grid-addons";
-import DataContextMenu, { deleteRow, insertRow } from './DataContextMenu';
-
 import styled from "styled-components";
 
 import "react-popupbox/dist/react-popupbox.css"
@@ -24,8 +20,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
 
+import { Editors } from "react-data-grid-addons";
 const { DropDownEditor } = Editors;
-const { ContextMenuTrigger } = Menu;
 
 const Form = styled.form`
   justify-content: center;
@@ -83,15 +79,16 @@ function tableToCSV(columnData, tableData) {
 }
 
 export default function CalendarForm() {
+  const { t } = useTranslation();
   const subjectsColumns = [
     {
       key: 'class_id',
-      name: 'Subject ID',
-      tooltip: 'Subject ID is a shortname of the subject to make it easier to be referenced in Schedules table',
+      name: t('tables.subjects.id'),
+      tooltip: t('tables.subjects.id_tooltip'),
       headerRenderer: columnTooltipRenderer
     },
-    { key: 'class_name', name: 'Subject Name' },
-    { key: 'class_desc', name: 'Subject Description' },
+    { key: 'class_name', name: t('tables.subjects.name') },
+    { key: 'class_desc', name: t('tables.subjects.desc') },
   ].map(c => ({ ...c, ...defaultColumnProperties }));
 
   const subjectsRows = [
@@ -99,26 +96,24 @@ export default function CalendarForm() {
     { class_id: 'ssdd', class_name: 'Sistemas Distribuidos', class_desc: 'otro' },
   ]
 
-  const tableTooltip = (isMobile ?
-    "Double tap on a cell to edit the content. Hold tap on a row to delete it or insert another one." :
-    "Double click on a cell to edit the content. Right click on a row to delete it or insert another one.");
+  const tableTooltip = (isMobile ? t('tables.tooltip.mobile') : t('tables.tooltip.web'));
 
   // weekday;class_id;start_hour;end_hour;is_practical
   const schedulesColumns = [
-    { key: 'weekday', name: 'Weekday' },
+    { key: 'weekday', name: t('tables.schedules.weekday') },
     {
       key: 'class_id',
-      name: 'Subject ID',
-      tooltip: 'ID specified in Subjects table',
+      name: t('tables.schedules.subject_id'),
+      tooltip: t('tables.schedules.subject_id_tooltip'),
       headerRenderer: columnTooltipRenderer
     },
-    { key: 'start_hour', name: 'Start Hour', editor: <HourEditor label="start_hour" /> },
-    { key: 'end_hour', name: 'End Hour', editor: <HourEditor label="end_hour" /> },
+    { key: 'start_hour', name: t('tables.schedules.start_hour'), editor: <HourEditor label="start_hour" /> },
+    { key: 'end_hour', name: t('tables.schedules.end_hour'), editor: <HourEditor label="end_hour" /> },
     {
       key: 'is_practical',
-      name: 'Is practical',
+      name: t('tables.schedules.is_practical'),
       editor: BoolEditor,
-      tooltip: 'Some weeks have classes but not practical ones',
+      tooltip: t('tables.schedules.is_practical_tooltip'),
       headerRenderer: columnTooltipRenderer
     },
   ].map(c => ({ ...c, ...defaultColumnProperties }));
@@ -203,7 +198,7 @@ export default function CalendarForm() {
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
     <Form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
       <InputTable
-        title="Subjects"
+        title={t('form.subjects')}
         tooltip={tableTooltip}
         startingRows={subjectsRows}
         defaultRow={defaultSubjectsRow}
@@ -212,7 +207,7 @@ export default function CalendarForm() {
       />
 
       <InputTable
-        title="Schedules"
+        title={t('form.schedules')}
         tooltip={tableTooltip}
         startingRows={schedulesRows}
         defaultRow={defaultSchedulesRow}
@@ -221,15 +216,15 @@ export default function CalendarForm() {
       />
 
       <div className="col-md-6">
-        <label htmlFor="semester" className="form-label">Semester</label>
+        <label htmlFor="semester" className="form-label">{t('form.semester')}</label>
         <select type="number" name="semester" className="form-select" ref={register}>
-          <option value={1}>First semester</option>
-          <option value={2}>Second semester</option>
+          <option value={1}>{t('semester.first_semester')}</option>
+          <option value={2}>{t('semester.second_semester')}</option>
         </select>
       </div>
 
       <div className="col-md-6">
-        <label htmlFor="exportType" className="form-label">Export Type</label>
+        <label htmlFor="exportType" className="form-label">{t('form.export_type')}</label>
         <select name="exportType" className="form-select" ref={register}>
           <option value="gcal">Google Calendar</option>
           <option value="org">Org Mode</option>
@@ -237,8 +232,10 @@ export default function CalendarForm() {
       </div>
 
       <div className="col-md-4">
-        <input type="submit"
-          className="w-100 btn btn-primary btn-lg" />
+        <input
+          type="submit"
+          className="w-100 btn btn-primary btn-lg"
+          value={t('form.submit')} />
       </div>
     </Form >
   );
