@@ -1,0 +1,34 @@
+{
+    "form": {
+        "subjects": "Asignaturas",
+        "schedules": "Horarios",
+        "semester": "Semestre",
+        "export_type": "Exportar para...",
+        "submit": "Generar"
+    },
+    "semester": {
+        "first_semester": "Primer semestre",
+        "second_semester": "Segundo semestre"
+    },
+    "tables": {
+        "tooltip": {
+            "mobile": "Pulsa dos veces en una casilla para editarla. Mantén pulsada una fila para eliminarla o insertar otra.",
+            "web": "Haz doble click en una casilla para editarla. Haz click derecho en una fila para eliminarla o insertar otra."
+        },
+        "subjects": {
+            "id": "ID de Asignatura",
+            "name": "Nombre de Asignatura",
+            "desc": "Descripción de Asignatura",
+            "id_tooltip": "El ID de Asignatura es una abreviación de la asignatura para facilitar las referencias en la tabla de horarios."
+        },
+        "schedules": {
+            "weekday": "Día de la semana",
+            "subject_id": "ID de Asignatura",
+            "subject_id_tooltip": "ID especificado en la tabla Asignaturas",
+            "start_hour": "Hora de inicio",
+            "end_hour": "Hora de fin",
+            "is_practical": "¿Es práctica?",
+            "is_practical_tooltip": "Algunas semanas tienen clases pero no hay prácticas."
+        }
+    }
+}

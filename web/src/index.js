@@ -1,8 +1,12 @@
-import React, { Component } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import CalendarForm from './CalendarForm';
-import styled from "styled-components";
+import { useTranslation, Trans, I18nextProvider } from 'react-i18next';
 import { PopupboxManager, PopupboxContainer } from "react-popupbox";
+import styled from "styled-components";
+
+import i18next from './i18nextInit';
+
+import CalendarForm from './CalendarForm';
 import './index.css';
 
 const Centered = styled.div`
@@ -12,28 +16,41 @@ const Centered = styled.div`
   width: 100%;
 `
 
-class App extends Component {
-  async componentDidMount() {
-    // Run golang instance
-    const go = new window.Go();
-    const source = await fetch(process.env.PUBLIC_URL + "/calendar.wasm");
-    const buffer = await source.arrayBuffer();
+function App() {
+  // Run like componentDidMount
+  useEffect(() => {
+    async function runGolangInstance() {
+      // Run golang instance
+      const go = new window.Go();
+      const source = await fetch(process.env.PUBLIC_URL + "/calendar.wasm");
+      const buffer = await source.arrayBuffer();
 
-    let { instance } = await WebAssembly.instantiate(buffer, go.importObject)
-    await go.run(instance)
-  }
+      let { instance } = await WebAssembly.instantiate(buffer, go.importObject)
+      await go.run(instance)
+    }
 
-  render() {
-    return (
+    runGolangInstance();
+  }, []);
+
+  return (
+    <Suspense fallback={<Loader />}>
       <Centered>
         <PopupboxContainer />
         <CalendarForm />
-      </Centered>
-    );
-  }
+      </Centered >
+    </Suspense>
+  );
 }
 
+const Loader = () => (
+  <div className="App">
+    <div>Loading...</div>
+  </div>
+);
+
 ReactDOM.render(
-  <App />,
+  <I18nextProvider i18n={i18next}>
+    <App />
+  </I18nextProvider>,
   document.getElementById('root')
 );

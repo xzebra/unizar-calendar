@@ -1,0 +1,34 @@
+{
+    "form": {
+        "subjects": "Subjects",
+        "schedules": "Schedules",
+        "semester": "Semester",
+        "export_type": "Export Type",
+        "submit": "Generate"
+    },
+    "semester": {
+        "first_semester": "First semester",
+        "second_semester": "Second semester"
+    },
+    "tables": {
+        "tooltip": {
+            "mobile": "Double tap on a cell to edit the content. Hold tap on a row to delete it or insert another one.",
+            "web": "Double click on a cell to edit the content. Right click on a row to delete it or insert another one."
+        },
+        "subjects": {
+            "id": "Subject ID",
+            "name": "Subject Name",
+            "desc": "Subject Description",
+            "id_tooltip": "Subject ID is a shortname of the subject to make it easier to be referenced in Schedules table"
+        },
+        "schedules": {
+            "weekday": "Weekday",
+            "subject_id": "Subject ID",
+            "subject_id_tooltip": "ID specified in Subjects table",
+            "start_hour": "Start Hour",
+            "end_hour": "End Hour",
+            "is_practical": "Is practical?",
+            "is_practical_tooltip": "Some weeks have classes but not practical ones"
+        }
+    }
+}
