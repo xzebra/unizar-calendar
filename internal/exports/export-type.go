@@ -8,7 +8,8 @@ type ExportType byte
 
 const (
 	OrgExport ExportType = iota
-	GcalExport
+	CSVExport
+	ICSExport
 )
 
 func (e *ExportType) String() string {
@@ -16,15 +17,17 @@ func (e *ExportType) String() string {
 }
 
 func ExportTypes() []string {
-	return []string{"org", "gcal"}
+	return []string{"org", "csv", "ics"}
 }
 
 func (e *ExportType) Set(in string) error {
 	switch in {
 	case "org":
 		*e = OrgExport
-	case "gcal":
-		*e = GcalExport
+	case "csv":
+		*e = CSVExport
+	case "ics":
+		*e = ICSExport
 	default:
 		return fmt.Errorf("export type `%s` does not exist", in)
 	}
