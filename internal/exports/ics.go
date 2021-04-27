@@ -1,8 +1,6 @@
 package exports
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/arran4/golang-ical"
@@ -11,14 +9,17 @@ import (
 )
 
 const (
-	icalTimeFormat = "20060102T150405Z"
+	icalTimeFormat                = "20060102T150405"
+	componentPropertyRecurrenceId = ics.ComponentProperty(ics.PropertyRecurrenceId)
 )
 
 // toGcalICS exports calendar to Google Calendar csv format. See the docs:
 // https://support.google.com/calendar/answer/37118?co=GENIE.Platform%3DDesktop&hl=en#zippy=%2Ccreate-or-edit-an-icalendar-file
 func toGcalICS(s *semester.Data) string {
 	cal := ics.NewCalendar()
-	cal.SetProductId("-//Github: @xzebra//Unizar Calendar")
+	cal.SetProductId("-//Zebra Apps//Unizar Calendar")
+	// I suppose everybody that uses this app has the Spain timezone.
+	cal.SetXWRTimezone("Europe/Madrid")
 
 	// NOTE: Not sure about which method do I have to choose. I used publish
 	// because Google Calendar exports have this `METHOD:PUBLISH`.
@@ -32,25 +33,51 @@ func toGcalICS(s *semester.Data) string {
 		name := s.Classes[class].Name
 		desc := s.Classes[class].Desc
 
-		event := cal.AddEvent(uuid.NewString())
-		event.SetCreatedTime(time.Now())
-		event.SetDtStampTime(time.Now())
-		event.SetModifiedAt(time.Now())
-		event.SetStartAt(times[0].Start)
-		event.SetEndAt(times[0].End)
-		event.SetSummary(name)
-		event.SetDescription(desc)
+		eventUUID := uuid.NewString()
 
-		for _, time := range times {
+		classTime := times[0]
+		startingEvent := cal.AddEvent(eventUUID)
+		startingEvent.SetCreatedTime(time.Now())
+		startingEvent.SetDtStampTime(time.Now())
+		startingEvent.SetModifiedAt(time.Now())
+
+		startingEventStart := classTime.Start.UTC().Format(icalTimeFormat)
+		startingEvent.SetProperty(ics.ComponentPropertyDtStart, startingEventStart)
+		startingEventEnd := classTime.End.UTC().Format(icalTimeFormat)
+		startingEvent.SetProperty(ics.ComponentPropertyDtEnd, startingEventEnd)
+
+		startingEvent.SetSummary(name)
+		startingEvent.SetDescription(desc)
+
+		// As google exports
+		startingEvent.SetSequence(0)
+		startingEvent.SetTimeTransparency(ics.TransparencyOpaque)
+
+		for _, classTime := range times[1:] {
+			start := classTime.Start.UTC().Format(icalTimeFormat)
+			end := classTime.End.UTC().Format(icalTimeFormat)
+
 			// RDATE for recurrence of events:
 			// https://www.kanzaki.com/docs/ical/rdate.html
-			event.AddRdate(fmt.Sprintf(
-				// Set the value as period to have different durations and start
-				// times.
-				"RDATE;VALUE=PERIOD:%s/%s",
-				time.Start.UTC().Format(icalTimeFormat), // Start time
-				time.End.UTC().Format(icalTimeFormat),   // End time
-			))
+			startingEvent.AddRdate(start)
+
+			event := cal.AddEvent(eventUUID)
+			event.SetCreatedTime(time.Now())
+			event.SetDtStampTime(time.Now())
+			event.SetModifiedAt(time.Now())
+
+			// link to parent event
+			event.SetProperty(componentPropertyRecurrenceId, start)
+
+			event.SetProperty(ics.ComponentPropertyDtStart, start)
+			event.SetProperty(ics.ComponentPropertyDtEnd, end)
+
+			event.SetSummary(name)
+			event.SetDescription(desc)
+
+			// As google exports
+			event.SetSequence(0)
+			event.SetTimeTransparency(ics.TransparencyOpaque)
 		}
 	}
 
