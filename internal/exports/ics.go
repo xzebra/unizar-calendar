@@ -1,6 +1,7 @@
 package exports
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/arran4/golang-ical"
@@ -37,14 +38,17 @@ func toGcalICS(s *semester.Data) string {
 
 		classTime := times[0]
 		startingEvent := cal.AddEvent(eventUUID)
+
+		startingEventStartDate := classTime.Start
+		startingEventStart := startingEventStartDate.UTC().Format(icalTimeFormat)
+		startingEvent.SetProperty(ics.ComponentPropertyDtStart, startingEventStart)
+		startingEventEndDate := classTime.End
+		startingEventEnd := startingEventEndDate.UTC().Format(icalTimeFormat)
+		startingEvent.SetProperty(ics.ComponentPropertyDtEnd, startingEventEnd)
+
 		startingEvent.SetCreatedTime(time.Now())
 		startingEvent.SetDtStampTime(time.Now())
 		startingEvent.SetModifiedAt(time.Now())
-
-		startingEventStart := classTime.Start.UTC().Format(icalTimeFormat)
-		startingEvent.SetProperty(ics.ComponentPropertyDtStart, startingEventStart)
-		startingEventEnd := classTime.End.UTC().Format(icalTimeFormat)
-		startingEvent.SetProperty(ics.ComponentPropertyDtEnd, startingEventEnd)
 
 		startingEvent.SetSummary(name)
 		startingEvent.SetDescription(desc)
@@ -53,24 +57,32 @@ func toGcalICS(s *semester.Data) string {
 		startingEvent.SetSequence(0)
 		startingEvent.SetTimeTransparency(ics.TransparencyOpaque)
 
+		// RDATE for recurrence of events:
+		// https://www.kanzaki.com/docs/ical/rdate.html
+		//
+		// Google Calendar seems to only understand comma separated RDATEs.
+		rdate := startingEventStart
+
 		for _, classTime := range times[1:] {
 			start := classTime.Start.UTC().Format(icalTimeFormat)
 			end := classTime.End.UTC().Format(icalTimeFormat)
 
-			// RDATE for recurrence of events:
-			// https://www.kanzaki.com/docs/ical/rdate.html
-			startingEvent.AddRdate(start)
+			if sameHour(classTime.Start, startingEventStartDate) &&
+				sameHour(classTime.End, startingEventEndDate) {
+				rdate += fmt.Sprintf(",%s", start)
+				continue
+			}
 
 			event := cal.AddEvent(eventUUID)
+			event.SetProperty(ics.ComponentPropertyDtStart, start)
+			event.SetProperty(ics.ComponentPropertyDtEnd, end)
+
 			event.SetCreatedTime(time.Now())
 			event.SetDtStampTime(time.Now())
 			event.SetModifiedAt(time.Now())
 
-			// link to parent event
+			// link to parent rdate
 			event.SetProperty(componentPropertyRecurrenceId, start)
-
-			event.SetProperty(ics.ComponentPropertyDtStart, start)
-			event.SetProperty(ics.ComponentPropertyDtEnd, end)
 
 			event.SetSummary(name)
 			event.SetDescription(desc)
@@ -78,8 +90,16 @@ func toGcalICS(s *semester.Data) string {
 			// As google exports
 			event.SetSequence(0)
 			event.SetTimeTransparency(ics.TransparencyOpaque)
+			event.SetStatus(ics.ObjectStatusConfirmed)
 		}
+
+		// Add total RDATE
+		startingEvent.AddRdate(rdate)
 	}
 
 	return cal.Serialize()
+}
+
+func sameHour(a time.Time, b time.Time) bool {
+	return a.Hour() == b.Hour() && a.Minute() == b.Minute()
 }
