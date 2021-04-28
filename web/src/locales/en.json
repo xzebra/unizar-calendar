@@ -4,6 +4,11 @@
         "schedules": "Schedules",
         "semester": "Semester",
         "export_type": "Export Type",
+        "export_types": {
+            "ics": "Google Calendar ICS (Recommended)",
+            "csv": "Google Calendar CSV",
+            "org": "Org Mode"
+        },
         "submit": "Generate"
     },
     "semester": {
@@ -33,6 +38,7 @@
     },
     "guides": {
         "title": "How to import?",
-        "gcal": "It is recommended to create a **new calendar** before importing the data.\nAlso, make sure you are actually selecting the new calendar as the **destination** of the import.\n\n[Click here](https://support.google.com/calendar/answer/37118?hl=en#import_to_gcal) for a guide about importing *.csv* files."
+        "csv": "It is recommended to create a **new calendar** before importing the data.\nAlso, make sure you are actually selecting the new calendar as the **destination** of the import.\n\n[Click here](https://support.google.com/calendar/answer/37118?hl=en#import_to_gcal) for a guide about importing *.csv* files.",
+        "ics": "It is recommended to create a **new calendar** before importing the data.\nAlso, make sure you are actually selecting the new calendar as the **destination** of the import.\n\n[Click here](https://support.google.com/calendar/answer/37118?hl=en#import_to_gcal) for a guide about importing *.ics* files."
     }
 }

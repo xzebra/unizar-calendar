@@ -24,9 +24,9 @@ var gcalCSVHeader = strings.Join([]string{
 	"Private",
 }, gcalCSVSeparator)
 
-// toGcal exports calendar to Google Calendar csv format. See the docs:
+// toGcalCSV exports calendar to Google Calendar CSV format. See the docs:
 // https://support.google.com/calendar/answer/37118?co=GENIE.Platform%3DDesktop&hl=en#zippy=%2Ccreate-or-edit-a-csv-file
-func toGcal(s *semester.Data) string {
+func toGcalCSV(s *semester.Data) string {
 	var out strings.Builder
 
 	out.WriteString(gcalCSVHeader + "\n")

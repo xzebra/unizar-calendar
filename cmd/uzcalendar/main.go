@@ -116,17 +116,20 @@ func main() {
 		log.Fatal(err)
 	}
 
+	export := exports.Export(data, exportType)
+
 	if outputFile != "" {
-		f, err := os.OpenFile(outputFile, os.O_RDWR|os.O_CREATE, 0666)
+		f, err := os.Create(outputFile)
 		if err != nil {
 			log.Fatalf("error opening output file: %v", err)
 		}
 		defer f.Close()
 
-		log.SetOutput(f)
+		f.WriteString(export)
+		f.Sync() // Writes to stable storage
+	} else {
+		log.Print(export)
 	}
-
-	log.Print(exports.Export(data, exportType))
 }
 
 func getSemesterData(semesterNum int) ([]byte, error) {

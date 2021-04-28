@@ -160,13 +160,10 @@ export default function CalendarForm() {
     let blob = new Blob([res], {
       type: 'text/plain'
     });
-    if (data.exportType === "gcal") {
-      fileDownload(blob, "calendar.csv");
-    } else if (data.exportType === "org") {
-      fileDownload(blob, "calendar.org");
-    }
 
-    if (data.exportType == "gcal") {
+    fileDownload(blob, "calendar." + data.exportType);
+
+    if (data.exportType == "ics" || data.exportType == "csv") {
       renderGuidePopup(res, data.exportType);
     }
   }
@@ -229,8 +226,9 @@ export default function CalendarForm() {
       <div className="col-md-6">
         <label htmlFor="exportType" className="form-label">{t('form.export_type')}</label>
         <select name="exportType" className="form-select" ref={register}>
-          <option value="gcal">Google Calendar</option>
-          <option value="org">Org Mode</option>
+          <option value="ics">{t('form.export_types.ics')}</option>
+          <option value="csv">{t('form.export_types.csv')}</option>
+          <option value="org">{t('form.export_types.org')}</option>
         </select>
       </div>
 
