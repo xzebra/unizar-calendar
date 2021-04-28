@@ -4,6 +4,11 @@
         "schedules": "Schedules",
         "semester": "Semester",
         "export_type": "Export Type",
+        "export_types": {
+            "ics": "Google Calendar ICS (Recommended)",
+            "csv": "Google Calendar CSV",
+            "org": "Org Mode"
+        },
         "submit": "Generate"
     },
     "semester": {
