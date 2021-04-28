@@ -87,6 +87,7 @@ func NewSemesterFromData(data []byte) (semester *Semester, err error) {
 }
 
 type timeRange struct {
+	UUID       string
 	Start, End time.Time
 }
 

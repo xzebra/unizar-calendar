@@ -74,6 +74,7 @@ func (s *Data) mergeClassesDays() error {
 
 			// Add times associated to class
 			s.Merged[class.ID] = append(s.Merged[class.ID], timeRange{
+				UUID:  class.UUID,
 				Start: class.Start.AddTo(day),
 				End:   class.End.AddTo(day),
 			})
