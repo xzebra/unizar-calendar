@@ -160,13 +160,10 @@ export default function CalendarForm() {
     let blob = new Blob([res], {
       type: 'text/plain'
     });
-    if (data.exportType === "gcal") {
-      fileDownload(blob, "calendar.csv");
-    } else if (data.exportType === "org") {
-      fileDownload(blob, "calendar.org");
-    }
 
-    if (data.exportType == "gcal") {
+    fileDownload(blob, "calendar." + data.exportType);
+
+    if (data.exportType == "ics" || data.exportType == "csv") {
       renderGuidePopup(res, data.exportType);
     }
   }

@@ -6,13 +6,13 @@ import { PopupboxManager } from "react-popupbox";
 import ReactMarkdown from 'react-markdown';
 import Popup from './Popup'
 
-function GuidePopup({ result, guide }) {
+function GuidePopup({ result, exportType }) {
     const { t } = useTranslation();
     return (
         <Popup title={t('guides.title')}>
             <div className="col-12">
                 <ReactMarkdown className="line-break">
-                    {t(guide)}
+                    {t('guides.' + exportType)}
                 </ReactMarkdown>
             </div>
         </Popup>
@@ -20,13 +20,9 @@ function GuidePopup({ result, guide }) {
 };
 
 export default function renderGuidePopup(res, exportType) {
-    const guides = {
-        "gcal": 'guides.gcal',
-    }
-
     const content = <GuidePopup
         result={res}
-        guide={guides[exportType]}
+        exportType={exportType}
     />;
     PopupboxManager.open({
         content,

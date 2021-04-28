@@ -38,6 +38,7 @@
     },
     "guides": {
         "title": "¿Cómo importar?",
-        "gcal": "Se recomienda crear un **nuevo calendario** antes de importar los datos.\nAdemás, asegúrate de que estás eligiendo el calendario correcto como **destino** para importar.\n\nPara una guía de como importar archivos *.csv*, [pulsa aquí](https://support.google.com/calendar/answer/37118?hl=es#import_to_gcal)."
+        "csv": "Se recomienda crear un **nuevo calendario** antes de importar los datos.\nAdemás, asegúrate de que estás eligiendo el calendario correcto como **destino** para importar.\n\nPara una guía de como importar archivos *.csv*, [pulsa aquí](https://support.google.com/calendar/answer/37118?hl=es#import_to_gcal).",
+        "ics": "Se recomienda crear un **nuevo calendario** antes de importar los datos.\nAdemás, asegúrate de que estás eligiendo el calendario correcto como **destino** para importar.\n\nPara una guía de como importar archivos *.ics*, [pulsa aquí](https://support.google.com/calendar/answer/37118?hl=es#import_to_gcal)."
     }
 }
