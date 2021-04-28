@@ -31,7 +31,7 @@ func TestNewData(t *testing.T) {
 	data, err := NewData(sem, parsed, 1)
 	assert.Nil(t, err)
 
-	expected := map[string][]*timeRange{
+	expected := map[string][]*TimeRange{
 		"ssdd": {
 			{ // Lb
 				Start: time.Date(2020, 12, 21, 17, 0, 0, 0, time.UTC),
