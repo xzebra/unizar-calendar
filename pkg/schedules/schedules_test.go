@@ -60,6 +60,13 @@ func TestParseSchedule_Classes(t *testing.T) {
 	returned, err := ParseSchedule(f2)
 	assert.Nil(t, err)
 
+	// Ignore UUIDs
+	for _, sch := range returned {
+		for _, class := range sch {
+			class.UUID = ""
+		}
+	}
+
 	assert.Equal(t, expected, returned)
 }
 
@@ -89,6 +96,13 @@ func TestParseSchedule_Practical(t *testing.T) {
 
 	returned, err := ParseSchedule(f2)
 	assert.Nil(t, err)
+
+	// Ignore UUIDs
+	for _, sch := range returned {
+		for _, class := range sch {
+			class.UUID = ""
+		}
+	}
 
 	assert.Equal(t, expected, returned)
 }

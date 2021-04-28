@@ -13,7 +13,7 @@ type Data struct {
 
 	// Merged is an association between class ids and a list of all
 	// days when the class should occur.
-	Merged map[string][]timeRange
+	Merged map[string][]*TimeRange
 }
 
 func NewData(semester *Semester, parsed *schedules.ParsedSemesterFiles, number int) (*Data, error) {
@@ -59,7 +59,7 @@ func (s *Data) getSchedGivenDayType(dayType string) (sched []*schedules.Schedule
 }
 
 func (s *Data) mergeClassesDays() error {
-	s.Merged = make(map[string][]timeRange)
+	s.Merged = make(map[string][]*TimeRange)
 
 	// For each type of day
 	for day, dayType := range s.Days {
@@ -73,7 +73,8 @@ func (s *Data) mergeClassesDays() error {
 			}
 
 			// Add times associated to class
-			s.Merged[class.ID] = append(s.Merged[class.ID], timeRange{
+			s.Merged[class.ID] = append(s.Merged[class.ID], &TimeRange{
+				UUID:  class.UUID,
 				Start: class.Start.AddTo(day),
 				End:   class.End.AddTo(day),
 			})

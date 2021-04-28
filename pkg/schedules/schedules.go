@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gocarina/gocsv"
+	"github.com/google/uuid"
 )
 
 type hour struct {
@@ -44,6 +45,8 @@ type ClassName struct {
 type Schedule map[string][]*ScheduleClass
 
 type ScheduleClass struct {
+	// UUID of this and the recurring events
+	UUID        string `csv:"-"` // Ignore the field
 	Weekday     string `csv:"weekday"`
 	ID          string `csv:"class_id"`
 	Start       hour   `csv:"start_hour"`
@@ -81,6 +84,7 @@ func ParseSchedule(in io.Reader) (out Schedule, err error) {
 	}
 
 	for _, class := range classes {
+		class.UUID = uuid.NewString()
 		out[class.Weekday] = append(out[class.Weekday], class)
 	}
 
