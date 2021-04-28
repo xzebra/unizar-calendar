@@ -31,7 +31,7 @@ func TestNewData(t *testing.T) {
 	data, err := NewData(sem, parsed, 1)
 	assert.Nil(t, err)
 
-	expected := map[string][]timeRange{
+	expected := map[string][]*timeRange{
 		"ssdd": {
 			{ // Lb
 				Start: time.Date(2020, 12, 21, 17, 0, 0, 0, time.UTC),
@@ -60,6 +60,13 @@ func TestNewData(t *testing.T) {
 				End:   time.Date(2020, 12, 22, 20, 0, 0, 0, time.UTC),
 			},
 		},
+	}
+
+	// Ignore UUIDs
+	for _, days := range data.Merged {
+		for _, day := range days {
+			day.UUID = ""
+		}
 	}
 
 	assert.Equal(t, len(expected), len(data.Merged))
