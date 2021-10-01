@@ -2,6 +2,7 @@ package semester
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/xzebra/unizar-calendar/pkg/gcal"
@@ -15,15 +16,50 @@ var (
 	evaluation = "eina.unizar.es_9vuatq1d533o3aoknsej9vbiv8@group.calendar.google.com"
 )
 
-var semesterEvents = map[int]struct{ Begin, End string }{
+type keywords struct {
+	Begin, End, Forbidden []string
+}
+
+// semesterEvents is a relation between the semester number and the keywords to
+// detect its beggining and end.
+var semesterEvents = map[int]keywords{
 	1: {
-		Begin: "Comienzo clases 1er Semestre",
-		End:   "Final clases 1er Semestre",
+		Begin:     []string{"comienzo", "grado", "clases", "1er", "semestre"},
+		End:       []string{"final", "grado", "clases", "1er", "semestre"},
+		Forbidden: []string{"máster"},
 	},
 	2: {
-		Begin: "Comienzo clases 2º Semestre",
-		End:   "Final clases 2º Semestre",
+		Begin:     []string{"comienzo", "grado", "clases", "2º", "semestre"},
+		End:       []string{"final", "grado", "clases", "2º", "semestre"},
+		Forbidden: []string{"máster"},
 	},
+}
+
+// computeProbabilitiesOfEvent returns the probability of an event to be the
+// begin or end event of a given semester.
+func computeProbabilitiesOfEvent(k keywords, eventName string) (beginProb, endProb float32) {
+	eventName = strings.ToLower(eventName)
+
+	prob := func(words []string) float32 {
+		// If it contains any of the forbidden words, it can't be any of the
+		// events.
+		for _, forbidden := range k.Forbidden {
+			if strings.Contains(eventName, forbidden) {
+				return 0
+			}
+		}
+
+		total := float32(len(words))
+		count := float32(0)
+		for _, word := range words {
+			if strings.Contains(eventName, word) {
+				count += 1
+			}
+		}
+		return count / total
+	}
+
+	return prob(k.Begin), prob(k.End)
 }
 
 type Semester struct {
@@ -44,10 +80,10 @@ func (s *Semester) findStartAndEnd(cal *gcal.GoogleCalendar, number int) error {
 
 		// Find the start and end of semester events.
 		for _, evalEvent := range eval {
-			switch evalEvent.Name {
-			case semesterEvents[number].Begin:
+			probBegin, probEnd := computeProbabilitiesOfEvent(semesterEvents[number], evalEvent.Name)
+			if probBegin >= 0.8 {
 				s.Begin = evalEvent.Start
-			case semesterEvents[number].End:
+			} else if probEnd >= 0.8 {
 				s.End = evalEvent.Start
 			}
 		}
