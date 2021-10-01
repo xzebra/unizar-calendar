@@ -17,21 +17,23 @@ var (
 )
 
 type keywords struct {
-	Begin, End, Forbidden []string
+	Begin, End, ForbiddenBegin, ForbiddenEnd []string
 }
 
 // semesterEvents is a relation between the semester number and the keywords to
 // detect its beggining and end.
 var semesterEvents = map[int]keywords{
 	1: {
-		Begin:     []string{"comienzo", "grado", "clases", "1er", "semestre"},
-		End:       []string{"final", "grado", "clases", "1er", "semestre"},
-		Forbidden: []string{"máster"},
+		Begin:          []string{"comienzo", "grado", "grados", "clases", "1er", "semestre"},
+		ForbiddenBegin: []string{"final", "fin", "máster"},
+		End:            []string{"final", "grado", "grados", "clases", "1er", "semestre"},
+		ForbiddenEnd:   []string{"comienzo", "inicio", "máster"},
 	},
 	2: {
-		Begin:     []string{"comienzo", "grado", "clases", "2º", "semestre"},
-		End:       []string{"final", "grado", "clases", "2º", "semestre"},
-		Forbidden: []string{"máster"},
+		Begin:          []string{"comienzo", "grado", "grados", "clases", "2º", "semestre"},
+		ForbiddenBegin: []string{"final", "fin", "máster"},
+		End:            []string{"final", "grado", "grados", "clases", "2º", "semestre"},
+		ForbiddenEnd:   []string{"comienzo", "inicio", "máster"},
 	},
 }
 
@@ -40,11 +42,11 @@ var semesterEvents = map[int]keywords{
 func computeProbabilitiesOfEvent(k keywords, eventName string) (beginProb, endProb float32) {
 	eventName = strings.ToLower(eventName)
 
-	prob := func(words []string) float32 {
+	prob := func(words, forbidden []string) float32 {
 		// If it contains any of the forbidden words, it can't be any of the
 		// events.
-		for _, forbidden := range k.Forbidden {
-			if strings.Contains(eventName, forbidden) {
+		for _, forb := range forbidden {
+			if strings.Contains(eventName, forb) {
 				return 0
 			}
 		}
@@ -59,7 +61,7 @@ func computeProbabilitiesOfEvent(k keywords, eventName string) (beginProb, endPr
 		return count / total
 	}
 
-	return prob(k.Begin), prob(k.End)
+	return prob(k.Begin, k.ForbiddenBegin), prob(k.End, k.ForbiddenEnd)
 }
 
 type Semester struct {
@@ -81,9 +83,9 @@ func (s *Semester) findStartAndEnd(cal *gcal.GoogleCalendar, number int) error {
 		// Find the start and end of semester events.
 		for _, evalEvent := range eval {
 			probBegin, probEnd := computeProbabilitiesOfEvent(semesterEvents[number], evalEvent.Name)
-			if probBegin >= 0.8 {
+			if probBegin >= 0.9 {
 				s.Begin = evalEvent.Start
-			} else if probEnd >= 0.8 {
+			} else if probEnd >= 0.9 {
 				s.End = evalEvent.Start
 			}
 		}
