@@ -51,7 +51,7 @@ func computeProbabilitiesOfEvent(k keywords, eventName string) (beginProb, endPr
 			}
 		}
 
-		total := float32(len(words))
+		total := float32(len(strings.Split(eventName, " ")))
 		count := float32(0)
 		for _, word := range words {
 			if strings.Contains(eventName, word) {
