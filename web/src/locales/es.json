@@ -1,44 +1,48 @@
 {
-    "form": {
-        "subjects": "Asignaturas",
-        "schedules": "Horarios",
-        "semester": "Semestre",
-        "export_type": "Exportar para...",
-        "export_types": {
-            "ics": "Google Calendar ICS (Recomendado)",
-            "csv": "Google Calendar CSV",
-            "org": "Org Mode"
-        },
-        "submit": "Generar"
+  "form": {
+    "subjects": "Asignaturas",
+    "schedules": "Horarios",
+    "semester": "Semestre",
+    "export_type": "Exportar para...",
+    "export_types": {
+      "ics": "Google Calendar ICS (Recomendado)",
+      "csv": "Google Calendar CSV",
+      "org": "Org Mode"
     },
-    "semester": {
-        "first_semester": "Primer semestre",
-        "second_semester": "Segundo semestre"
+    "submit": "Generar"
+  },
+  "semester": {
+    "first_semester": "Primer semestre",
+    "second_semester": "Segundo semestre"
+  },
+  "tables": {
+    "tooltip": {
+      "mobile": "Pulsa dos veces en una casilla para editarla. Mantén pulsada una fila para eliminarla o insertar otra.",
+      "web": "Haz doble click en una casilla para editarla. Haz click derecho en una fila para eliminarla o insertar otra."
     },
-    "tables": {
-        "tooltip": {
-            "mobile": "Pulsa dos veces en una casilla para editarla. Mantén pulsada una fila para eliminarla o insertar otra.",
-            "web": "Haz doble click en una casilla para editarla. Haz click derecho en una fila para eliminarla o insertar otra."
-        },
-        "subjects": {
-            "id": "ID de Asignatura",
-            "name": "Nombre de Asignatura",
-            "desc": "Descripción de Asignatura",
-            "id_tooltip": "El ID de Asignatura es una abreviación de la asignatura para facilitar las referencias en la tabla de horarios."
-        },
-        "schedules": {
-            "weekday": "Día de la semana",
-            "subject_id": "ID de Asignatura",
-            "subject_id_tooltip": "ID especificado en la tabla Asignaturas",
-            "start_hour": "Hora de inicio",
-            "end_hour": "Hora de fin",
-            "is_practical": "¿Es práctica?",
-            "is_practical_tooltip": "Algunas semanas tienen clases pero no hay prácticas."
-        }
+    "subjects": {
+      "id": "ID de Asignatura",
+      "name": "Nombre de Asignatura",
+      "desc": "Descripción de Asignatura",
+      "id_tooltip": "El ID de Asignatura es una abreviación de la asignatura para facilitar las referencias en la tabla de horarios."
     },
-    "guides": {
-        "title": "¿Cómo importar?",
-        "csv": "Se recomienda crear un **nuevo calendario** antes de importar los datos.\nAdemás, asegúrate de que estás eligiendo el calendario correcto como **destino** para importar.\n\nPara una guía de como importar archivos *.csv*, [pulsa aquí](https://support.google.com/calendar/answer/37118?hl=es#import_to_gcal).",
-        "ics": "Se recomienda crear un **nuevo calendario** antes de importar los datos.\nAdemás, asegúrate de que estás eligiendo el calendario correcto como **destino** para importar.\n\nPara una guía de como importar archivos *.ics*, [pulsa aquí](https://support.google.com/calendar/answer/37118?hl=es#import_to_gcal)."
+    "schedules": {
+      "weekday": "Día de la semana",
+      "subject_id": "ID de Asignatura",
+      "subject_id_tooltip": "ID especificado en la tabla Asignaturas",
+      "start_hour": "Hora de inicio",
+      "end_hour": "Hora de fin",
+      "is_practical": "¿Es práctica?",
+      "is_practical_tooltip": "Algunas semanas tienen clases pero no hay prácticas."
     }
+  },
+  "guides": {
+    "title": "¿Cómo importar?",
+    "csv": "Se recomienda crear un **nuevo calendario** antes de importar los datos.\nAdemás, asegúrate de que estás eligiendo el calendario correcto como **destino** para importar.\n\nPara una guía de como importar archivos *.csv*, [pulsa aquí](https://support.google.com/calendar/answer/37118?hl=es#import_to_gcal).",
+    "ics": "Se recomienda crear un **nuevo calendario** antes de importar los datos.\nAdemás, asegúrate de que estás eligiendo el calendario correcto como **destino** para importar.\n\nPara una guía de como importar archivos *.ics*, [pulsa aquí](https://support.google.com/calendar/answer/37118?hl=es#import_to_gcal)."
+  },
+  "warning": {
+    "title": "Advertencia",
+    "inconsistent": "El calendario publicado en la página oficial de la EINA es inconsistente con el calendario interno de Google Calendar que esta aplicación usa (pero está administrado por la Universidad). Los cambios de día y los días sin prácticas podrían ser incorrectos."
+  }
 }
