@@ -1,5 +1,9 @@
 import React from "react";
+
+import { useTranslation } from "react-i18next";
+
 import { PopupboxManager } from "react-popupbox";
+import ReactMarkdown from 'react-markdown';
 import Popup from './Popup'
 
 function WarningPopup({ warningID }) {
