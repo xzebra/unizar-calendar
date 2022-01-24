@@ -9,6 +9,8 @@ import i18next from './i18nextInit';
 import CalendarForm from './CalendarForm';
 import './index.css';
 
+import renderWarningPopup from './WarningPopup'
+
 const Centered = styled.div`
   height: 100%;
   display: flex;
@@ -30,6 +32,9 @@ function App() {
     }
 
     runGolangInstance();
+
+    // FIXME: Temporarily tell the users about the current problems
+    renderWarningPopup("inconsistent");
   }, []);
 
   return (

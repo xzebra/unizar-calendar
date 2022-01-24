@@ -1,44 +1,48 @@
 {
-    "form": {
-        "subjects": "Subjects",
-        "schedules": "Schedules",
-        "semester": "Semester",
-        "export_type": "Export Type",
-        "export_types": {
-            "ics": "Google Calendar ICS (Recommended)",
-            "csv": "Google Calendar CSV",
-            "org": "Org Mode"
-        },
-        "submit": "Generate"
+  "form": {
+    "subjects": "Subjects",
+    "schedules": "Schedules",
+    "semester": "Semester",
+    "export_type": "Export Type",
+    "export_types": {
+      "ics": "Google Calendar ICS (Recommended)",
+      "csv": "Google Calendar CSV",
+      "org": "Org Mode"
     },
-    "semester": {
-        "first_semester": "First semester",
-        "second_semester": "Second semester"
+    "submit": "Generate"
+  },
+  "semester": {
+    "first_semester": "First semester",
+    "second_semester": "Second semester"
+  },
+  "tables": {
+    "tooltip": {
+      "mobile": "Double tap on a cell to edit the content. Hold tap on a row to delete it or insert another one.",
+      "web": "Double click on a cell to edit the content. Right click on a row to delete it or insert another one."
     },
-    "tables": {
-        "tooltip": {
-            "mobile": "Double tap on a cell to edit the content. Hold tap on a row to delete it or insert another one.",
-            "web": "Double click on a cell to edit the content. Right click on a row to delete it or insert another one."
-        },
-        "subjects": {
-            "id": "Subject ID",
-            "name": "Subject Name",
-            "desc": "Subject Description",
-            "id_tooltip": "Subject ID is a shortname of the subject to make it easier to be referenced in Schedules table"
-        },
-        "schedules": {
-            "weekday": "Weekday",
-            "subject_id": "Subject ID",
-            "subject_id_tooltip": "ID specified in Subjects table",
-            "start_hour": "Start Hour",
-            "end_hour": "End Hour",
-            "is_practical": "Is practical?",
-            "is_practical_tooltip": "Some weeks have classes but not practical ones"
-        }
+    "subjects": {
+      "id": "Subject ID",
+      "name": "Subject Name",
+      "desc": "Subject Description",
+      "id_tooltip": "Subject ID is a shortname of the subject to make it easier to be referenced in Schedules table"
     },
-    "guides": {
-        "title": "How to import?",
-        "csv": "It is recommended to create a **new calendar** before importing the data.\nAlso, make sure you are actually selecting the new calendar as the **destination** of the import.\n\n[Click here](https://support.google.com/calendar/answer/37118?hl=en#import_to_gcal) for a guide about importing *.csv* files.",
-        "ics": "It is recommended to create a **new calendar** before importing the data.\nAlso, make sure you are actually selecting the new calendar as the **destination** of the import.\n\n[Click here](https://support.google.com/calendar/answer/37118?hl=en#import_to_gcal) for a guide about importing *.ics* files."
+    "schedules": {
+      "weekday": "Weekday",
+      "subject_id": "Subject ID",
+      "subject_id_tooltip": "ID specified in Subjects table",
+      "start_hour": "Start Hour",
+      "end_hour": "End Hour",
+      "is_practical": "Is practical?",
+      "is_practical_tooltip": "Some weeks have classes but not practical ones"
     }
+  },
+  "guides": {
+    "title": "How to import?",
+    "csv": "It is recommended to create a **new calendar** before importing the data.\nAlso, make sure you are actually selecting the new calendar as the **destination** of the import.\n\n[Click here](https://support.google.com/calendar/answer/37118?hl=en#import_to_gcal) for a guide about importing *.csv* files.",
+    "ics": "It is recommended to create a **new calendar** before importing the data.\nAlso, make sure you are actually selecting the new calendar as the **destination** of the import.\n\n[Click here](https://support.google.com/calendar/answer/37118?hl=en#import_to_gcal) for a guide about importing *.ics* files."
+  },
+  "warning": {
+    "title": "Warning",
+    "inconsistent": "Calendar published in the official EINA page is inconsistent with the internal Google Calendar which this application uses (but it is created by the University). Day changes and non practical days may be incorrect."
+  }
 }

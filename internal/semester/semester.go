@@ -24,16 +24,16 @@ type keywords struct {
 // detect its beggining and end.
 var semesterEvents = map[int]keywords{
 	1: {
-		Begin:          []string{"comienzo", "grado", "grados", "clases", "1er", "semestre"},
-		ForbiddenBegin: []string{"final", "fin", "máster"},
-		End:            []string{"final", "grado", "grados", "clases", "1er", "semestre"},
-		ForbiddenEnd:   []string{"comienzo", "inicio", "máster"},
+		Begin:          []string{"comienzo", "inicio", "de", "grado", "grados", "clases", "1er", "1", "1º", "semestre"},
+		ForbiddenBegin: []string{"final", "fin", "máster", "2º", "2", "2do"},
+		End:            []string{"final", "fin", "grado", "grados", "de", "clases", "1er", "1", "1º", "semestre"},
+		ForbiddenEnd:   []string{"comienzo", "inicio", "máster", "2º", "2", "2do"},
 	},
 	2: {
-		Begin:          []string{"comienzo", "grado", "grados", "clases", "2º", "semestre"},
-		ForbiddenBegin: []string{"final", "fin", "máster"},
-		End:            []string{"final", "grado", "grados", "clases", "2º", "semestre"},
-		ForbiddenEnd:   []string{"comienzo", "inicio", "máster"},
+		Begin:          []string{"comienzo", "grado", "grados", "de", "clases", "2º", "2", "2do", "semestre"},
+		ForbiddenBegin: []string{"final", "fin", "máster", "1er", "1", "1º"},
+		End:            []string{"final", "grado", "grados", "de", "clases", "2º", "2", "2do", "semestre", "examenes", "exámenes", "culm"},
+		ForbiddenEnd:   []string{"comienzo", "inicio", "máster", "1er", "1", "1º"},
 	},
 }
 
@@ -41,7 +41,18 @@ var semesterEvents = map[int]keywords{
 // begin or end event of a given semester.
 func computeProbabilitiesOfEvent(k keywords, eventName string) (beginProb, endProb float32) {
 	eventName = strings.ToLower(eventName)
+	eventWords := strings.Split(eventName, " ")
 
+	in := func(elem string, v []string) bool {
+		for _, item := range v {
+			if elem == item {
+				return true
+			}
+		}
+		return false
+	}
+
+	// Final clases Grados 1er Semestre
 	prob := func(words, forbidden []string) float32 {
 		// If it contains any of the forbidden words, it can't be any of the
 		// events.
@@ -51,13 +62,14 @@ func computeProbabilitiesOfEvent(k keywords, eventName string) (beginProb, endPr
 			}
 		}
 
-		total := float32(len(strings.Split(eventName, " ")))
+		total := float32(len(eventWords))
 		count := float32(0)
-		for _, word := range words {
-			if strings.Contains(eventName, word) {
+		for _, word := range eventWords {
+			if in(word, words) {
 				count += 1
 			}
 		}
+
 		return count / total
 	}
 
@@ -73,6 +85,8 @@ type Semester struct {
 func (s *Semester) findStartAndEnd(cal *gcal.GoogleCalendar, number int) error {
 	year := time.Now().Year()
 
+	gotProbBegin, gotProbEnd := float32(0.85), float32(0.85)
+
 	// Find begind and end of semester in current or previous year.
 	for year >= time.Now().Year()-1 {
 		eval, err := cal.GetYearCalendarEvents(evaluation, year)
@@ -83,10 +97,22 @@ func (s *Semester) findStartAndEnd(cal *gcal.GoogleCalendar, number int) error {
 		// Find the start and end of semester events.
 		for _, evalEvent := range eval {
 			probBegin, probEnd := computeProbabilitiesOfEvent(semesterEvents[number], evalEvent.Name)
-			if probBegin >= 0.9 {
+			if probBegin > gotProbBegin {
+				// End event cannot be before start
+				if !s.End.IsZero() && s.End.Before(evalEvent.Start) {
+					continue
+				}
+
 				s.Begin = evalEvent.Start
-			} else if probEnd >= 0.9 {
+				gotProbBegin = probBegin
+			} else if probEnd > gotProbEnd {
+				// Start event cannot be after end
+				if !s.Begin.IsZero() && s.Begin.After(evalEvent.Start) {
+					continue
+				}
+
 				s.End = evalEvent.Start
+				gotProbEnd = probEnd
 			}
 		}
 
