@@ -134,10 +134,22 @@ func (c *GoogleCalendar) GetCalendarEventDays(id string, timeMin, timeMax time.T
 		}
 
 		var eventType string
-		// Day type change in non practical days
-		if strings.HasPrefix(item.Summary, "Horario de ") {
+		if strings.Contains(item.Summary, "(Máster)") {
+			// Sorry but I don't care about Masters
+			continue
+		} else if strings.HasPrefix(item.Summary, "Horario de ") {
+			// Day type change in non practical days
+
 			eventType = fmt.Sprintf("%c%c",
 				daysByWeekday[strings.TrimPrefix(item.Summary, "Horario de ")],
+				'x',
+			)
+		} else if !strings.Contains(item.Summary, "(Grados)") && len(item.Summary) > 3 {
+			// Day change also in non practical day, but with format changed
+			// (thanks Unizar):
+			// Lunes, Martes, Miercoles...
+			eventType = fmt.Sprintf("%c%c",
+				daysByWeekday[strings.ToLower(string(item.Summary))],
 				'x',
 			)
 		} else {
