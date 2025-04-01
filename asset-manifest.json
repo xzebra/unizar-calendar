@@ -1,0 +1,26 @@
+{
+  "files": {
+    "es.js": "/unizar-calendar/static/js/es.4367011a.chunk.js",
+    "es.js.map": "/unizar-calendar/static/js/es.4367011a.chunk.js.map",
+    "main.css": "/unizar-calendar/static/css/main.b31ca885.chunk.css",
+    "main.js": "/unizar-calendar/static/js/main.df67bbcd.chunk.js",
+    "main.js.map": "/unizar-calendar/static/js/main.df67bbcd.chunk.js.map",
+    "runtime-main.js": "/unizar-calendar/static/js/runtime-main.55b53859.js",
+    "runtime-main.js.map": "/unizar-calendar/static/js/runtime-main.55b53859.js.map",
+    "static/css/3.9a96bb54.chunk.css": "/unizar-calendar/static/css/3.9a96bb54.chunk.css",
+    "static/js/3.214ae36d.chunk.js": "/unizar-calendar/static/js/3.214ae36d.chunk.js",
+    "static/js/3.214ae36d.chunk.js.map": "/unizar-calendar/static/js/3.214ae36d.chunk.js.map",
+    "index.html": "/unizar-calendar/index.html",
+    "static/css/3.9a96bb54.chunk.css.map": "/unizar-calendar/static/css/3.9a96bb54.chunk.css.map",
+    "static/css/main.b31ca885.chunk.css.map": "/unizar-calendar/static/css/main.b31ca885.chunk.css.map",
+    "static/js/3.214ae36d.chunk.js.LICENSE.txt": "/unizar-calendar/static/js/3.214ae36d.chunk.js.LICENSE.txt",
+    "static/media/getFetch.cjs": "/unizar-calendar/static/media/getFetch.d7d6010d.cjs"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.55b53859.js",
+    "static/css/3.9a96bb54.chunk.css",
+    "static/js/3.214ae36d.chunk.js",
+    "static/css/main.b31ca885.chunk.css",
+    "static/js/main.df67bbcd.chunk.js"
+  ]
+}
